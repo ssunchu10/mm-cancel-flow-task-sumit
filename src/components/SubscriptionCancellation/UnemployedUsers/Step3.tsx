@@ -1,0 +1,216 @@
+"use client";
+
+import React, { useState, useEffect, useMemo, useRef } from "react";
+
+export interface Step3Props {
+  onNext?: () => void;
+  onBack?: () => void;
+}
+
+const REASONS = [
+  "Too expensive",
+  "Platform not helpful",
+  "Not enough relevant jobs",
+  "Decided not to move",
+  "Other",
+];
+
+const Step3: React.FC<Step3Props> = ({ onNext, onBack }) => {
+  const [selectedReason, setSelectedReason] = useState<string>("");
+  const [amount, setAmount] = useState<string>("");
+  const [details, setDetails] = useState<string>("");
+  const [showAmountError, setShowAmountError] = useState(false);
+  const [showDetailsError, setShowDetailsError] = useState(false);
+  const amountTimeout = useRef<NodeJS.Timeout | null>(null);
+  const detailsTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const isAmountValid =
+    selectedReason === REASONS[0] &&
+    amount.trim().length > 0 &&
+    /^\d+(\.\d{1,2})?$/.test(amount.trim());
+
+  const isDetailsValid =
+    selectedReason &&
+    selectedReason !== REASONS[0] &&
+    details.trim().length >= 25;
+
+  const canContinue =
+    selectedReason === REASONS[0] ? isAmountValid : isDetailsValid;
+
+  useEffect(() => {
+    if (selectedReason === REASONS[0] && amount && !isAmountValid) {
+      if (amountTimeout.current) clearTimeout(amountTimeout.current);
+      amountTimeout.current = setTimeout(() => setShowAmountError(true), 400);
+    } else {
+      setShowAmountError(false);
+      if (amountTimeout.current) clearTimeout(amountTimeout.current);
+    }
+    return () => {
+      if (amountTimeout.current) clearTimeout(amountTimeout.current);
+    };
+  }, [amount, isAmountValid, selectedReason]);
+
+  useEffect(() => {
+    if (
+      selectedReason &&
+      selectedReason !== REASONS[0] &&
+      details.trim().length > 0 &&
+      details.trim().length < 25
+    ) {
+      if (detailsTimeout.current) clearTimeout(detailsTimeout.current);
+      detailsTimeout.current = setTimeout(() => setShowDetailsError(true), 400);
+    } else {
+      setShowDetailsError(false);
+      if (detailsTimeout.current) clearTimeout(detailsTimeout.current);
+    }
+    return () => {
+      if (detailsTimeout.current) clearTimeout(detailsTimeout.current);
+    };
+  }, [details, isDetailsValid, selectedReason]);
+
+  return (
+    <div className="flex flex-col">
+      <button
+        onClick={onBack}
+        className="md:hidden inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 mb-2"
+      >
+        <span className="text-lg">&lt;</span> Back
+      </button>
+      <h2 className="text-[20px] md:text-[25px] leading-snug font-semibold text-gray-900 mb-2">
+        What's the main reason for cancelling?
+      </h2>
+      <p className="text-xs md:text-sm text-gray-800 mb-4">
+        Please take a minute to let us know why:
+      </p>
+      <div className="flex flex-col gap-3">
+        {selectedReason ? (
+          <label
+            key={selectedReason}
+            className="flex items-center gap-2 cursor-pointer"
+          >
+            <input
+              type="radio"
+              name="cancelReason"
+              value={selectedReason}
+              checked={true}
+              onChange={() => {
+                setSelectedReason("");
+                setDetails("");
+                setAmount("");
+              }}
+              className="accent-black-600"
+            />
+            <span className="text-xs md:text-sm  text-gray-900">{selectedReason}</span>
+          </label>
+        ) : (
+          REASONS.map((reason) => (
+            <label
+              key={reason}
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <input
+                type="radio"
+                name="cancelReason"
+                value={reason}
+                checked={false}
+                onChange={() => {
+                  setSelectedReason(reason);
+                  setDetails("");
+                  setAmount("");
+                }}
+                className="accent-black-600"
+              />
+              <span className="text-xs md:text-sm text-gray-900">{reason}</span>
+            </label>
+          ))
+        )}
+      </div>
+      {/* Conditional input */}
+      {selectedReason === REASONS[0] && (
+        <div>
+          <label className="block text-[10px] md:text-sm text-gray-800 py-2">
+            What would be the maximum you would be willing to pay?*
+          </label>
+          {showAmountError && (
+            <div className="text-[10px] md:text-sm text-red-400 font-semibold pb-2">
+              Please enter a valid amount so we can understand your feedback.*
+            </div>
+          )}
+          <div
+            className="border border-black rounded flex items-center gap-2 px-2 cursor-text"
+            onClick={() => {
+              const input = document.getElementById("amount-input");
+              if (input) {
+                (input as HTMLInputElement).focus();
+              }
+            }}
+          >
+            <span className="text-xs font-bold text-gray-500">$</span>
+            <input
+              id="amount-input"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="px-3 py-2 text-sm text-black outline-none bg-transparent"
+            />
+          </div>
+        </div>
+      )}
+      {selectedReason && selectedReason !== REASONS[0] && (
+        <div>
+          <label className="block text-[10px] md:text-sm text-gray-800 py-2">
+            {selectedReason === REASONS[1] &&
+              "What can we change to make the platform more helpful?*"}
+            {selectedReason === REASONS[2] &&
+              "In which way can we make the jobs more relevant?*"}
+            {selectedReason === REASONS[3] &&
+              "What changed for you to decide to not move?*"}
+            {selectedReason === REASONS[4] &&
+              "What would have helped you the most?*"}
+          </label>
+          {showDetailsError && (
+            <div className="text-[10px] md:text-sm text-red-400 font-semibold pb-2">
+              Please enter at least 25 characters so we can understand your
+              feedback.*
+            </div>
+          )}
+          <div className="relative">
+            <textarea
+              value={details}
+              onChange={(e) => setDetails(e.target.value)}
+              placeholder=""
+              className="w-full min-h-40 p-4 border border-gray-300 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-[#8952fc]/30 focus:border-[#8952fc] bg-white text-black text-xs"
+              aria-label="Feedback"
+            />
+            <span className="pointer-events-none absolute bottom-3 right-3 text-[11px] text-gray-500">
+              Min 25 characters ({details.trim().length}/25)
+            </span>
+          </div>
+        </div>
+      )}
+      <hr className="mt-5 border-gray-200" />
+      <div className="mt-5 grid gap-3">
+        <button
+          className="w-full rounded-lg px-4 py-3 text-sm font-medium bg-[#43c463] text-white hover:bg-[#36a94e] transition-colors"
+          //   onClick={onNext}
+        >
+          Get 50% off <span className="font-normal">|</span>{" "}
+          <span className="text-white">$12.50</span>{" "}
+          <span className="line-through text-gray-200">$25</span>
+        </button>
+        <button
+          disabled={!canContinue}
+          className={`w-full rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+            canContinue
+              ? "bg-red-600 text-white hover:bg-[#7b40fc]"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
+          onClick={canContinue ? onNext : undefined}
+        >
+          Complete Cancellation
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Step3;

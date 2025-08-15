@@ -26,7 +26,7 @@ export default function EmployedStep3({ onNext, onBack, foundViaMM }: EmployedSt
     <div className="flex flex-col">
       <button
         onClick={onBack}
-        className="md:hidden inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 mb-3"
+        className="md:hidden inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 mb-2"
       >
         <span className="text-lg">&lt;</span>
         Back
@@ -53,6 +53,8 @@ export default function EmployedStep3({ onNext, onBack, foundViaMM }: EmployedSt
           let us help get your visa sorted.
         </p>
       )}
+
+<     hr className="md:hidden   mt-2 mb-2 border-gray-200" />
 
       <p className="text-xs md:text-sm text-black mt-2">
         Is your company providing an immigration lawyer to help with your visa?

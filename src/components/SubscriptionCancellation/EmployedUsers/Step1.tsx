@@ -45,7 +45,7 @@ export default function EmployedStep1({ onNext, onBack }: EmployedStep1Props) {
             {/* Back button - visible on mobile only */}
             <button
                 onClick={onBack}
-                className="md:hidden inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 mb-6"
+                className="md:hidden inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 mb-2"
             >
                 <span className="text-lg">&lt;</span>
                 Back
@@ -53,8 +53,9 @@ export default function EmployedStep1({ onNext, onBack }: EmployedStep1Props) {
 
             <h2 className="text-[19px] md:text-[25px] leading-snug font-semibold text-gray-900">Congrats on the new role! 🎉</h2>
 
+            <hr className="md:hidden mt-2 mb-2 border-gray-200" />
             {/* Q1 */}
-            <div className="mt-6">
+            <div className="mt-2">
                 <p className="text-xs md:text-sm text-gray-800 mb-2">
                     Did you find this job with MigrateMate? <span className="text-black">*</span>
                 </p>
@@ -144,8 +145,10 @@ export default function EmployedStep1({ onNext, onBack }: EmployedStep1Props) {
                     ))}
                 </div>
             </div>
+            
+            <hr className="mt-5 border-gray-200" />
 
-            <div className="mt-6">
+            <div className="mt-5">
                 <button
                     onClick={goNext}
                     disabled={!canContinue}
