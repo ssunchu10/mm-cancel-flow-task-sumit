@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 
 interface EmployedStep3Props {
-  onNext: () => void;
+  onNext: (hasLawyer: "yes" | "no") => void;
   onBack: () => void;
   foundViaMM: "yes" | "no";
 }
@@ -19,7 +19,7 @@ export default function EmployedStep3({ onNext, onBack, foundViaMM }: EmployedSt
 
   const complete = () => {
     if (!canSubmit) return;
-    onNext();
+    onNext(hasLawyer!);
   };
 
   return (

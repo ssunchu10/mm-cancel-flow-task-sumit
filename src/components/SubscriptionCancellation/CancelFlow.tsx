@@ -13,6 +13,7 @@ import UnemployedStep2 from "./UnemployedUsers/Step2";
 import UnemployedStep3 from "./UnemployedUsers/Step3";
 import SubscriptionEndMessage from "./UnemployedUsers/SubscriptionEndMessage";
 import SubscriptionContinuedMessage from "./SubscriptionContinuedMessage";
+import EmployedEndMessage from "./EmployedUsers/SubscriptionEndMessage";
 
 type Choice = "yes" | "no" | null;
 
@@ -21,7 +22,9 @@ export default function CancelFlow() {
   const [choice, setChoice] = useState<Choice>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [foundViaMM, setFoundViaMM] = useState<"yes" | "no" | null>(null);
-  const [flowCompleted, setFlowCompleted] = useState(false);
+  const [hasLawyer, setHasLawyer] = useState<"yes" | "no" | null>(null);
+  const [flowCompletedUnemployed, setFlowCompletedUnemployed] = useState(false);
+  const [flowCompletedEmployed, setFlowCompletedEmployed] = useState(false);
   const [subscriptionContinued, setSubscriptionContinued] = useState(false);
   const subscriptionEndDate = "XX date";
 
@@ -43,13 +46,17 @@ export default function CancelFlow() {
     setCurrentStep(2);
   };
 
+  const handleStep3Next = (hasLawyer: "yes" | "no") => {
+    setHasLawyer(hasLawyer);
+    setFlowCompletedEmployed(true);
+  };
+
   const choose = (val: "yes" | "no") => {
     setChoice(val);
-    if (val === "yes") {
-      setCurrentStep(1);
-    } else {
-      setCurrentStep(1);
-    }
+    setCurrentStep(1);
+    setFlowCompletedUnemployed(false);
+    setFlowCompletedEmployed(false);
+    setSubscriptionContinued(false);
   };
 
   const renderEmployedSteps = () => {
@@ -63,7 +70,7 @@ export default function CancelFlow() {
       case 3:
         return (
           <EmployedStep3
-            onNext={() => setFlowCompleted(true)}
+            onNext={handleStep3Next}
             onBack={handleBack}
             foundViaMM={foundViaMM!}
           />
@@ -92,7 +99,7 @@ export default function CancelFlow() {
       case 3:
         return (
           <UnemployedStep3
-            onNext={() => setFlowCompleted(true)}
+            onNext={() => setFlowCompletedUnemployed(true)}
             onBack={handleBack}
             onOffer={() => setSubscriptionContinued(true)}
           />
@@ -104,16 +111,16 @@ export default function CancelFlow() {
     return (
       <div className="min-h-screen bg-gray-300 p-4 flex items-center justify-center">
         <div className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
-          <SubscriptionContinuedMessage /> 
+          <SubscriptionContinuedMessage />
         </div>
       </div>
     );
   }
 
-  if (flowCompleted) {
+  if (flowCompletedUnemployed) {
     const backFromEnd = () => {
-      setFlowCompleted(false);
-      setCurrentStep(totalSteps); 
+      setFlowCompletedUnemployed(false);
+      setCurrentStep(totalSteps);
     };
 
     return (
@@ -126,6 +133,27 @@ export default function CancelFlow() {
             showProgress
           />
           <SubscriptionEndMessage endDate={subscriptionEndDate} />
+        </div>
+      </div>
+    );
+  }
+
+  if (flowCompletedEmployed) {
+    const backFromEmployedEnd = () => {
+      setFlowCompletedEmployed(false);
+      setCurrentStep(totalSteps);
+    };
+
+    return (
+      <div className="min-h-screen bg-gray-300 p-4 flex items-center justify-center">
+        <div className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
+          <Header
+            totalSteps={totalSteps}
+            currentStep={totalSteps + 1}
+            onBack={backFromEmployedEnd}
+            showProgress
+          />
+          <EmployedEndMessage hasLawyer={hasLawyer === "yes"} />
         </div>
       </div>
     );
