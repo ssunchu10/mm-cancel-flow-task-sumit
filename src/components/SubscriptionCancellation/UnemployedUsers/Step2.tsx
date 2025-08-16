@@ -11,9 +11,10 @@ const GRID_OPTIONS = {
 export interface Step2Props {
   onNext?: () => void;
   onBack?: () => void;
+  onOffer?: () => void;
 }
 
-export default function UnemployedStep2({ onNext, onBack }: Step2Props) {
+export default function UnemployedStep2({ onNext, onBack, onOffer }: Step2Props) {
   const [appliedCount, setAppliedCount] = useState<string | undefined>(
     undefined
   );
@@ -31,7 +32,6 @@ export default function UnemployedStep2({ onNext, onBack }: Step2Props) {
 
   return (
     <div className="flex flex-col">
-      {/* Back button - visible on mobile only */}
       <button
         onClick={onBack}
         className="md:hidden inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 mb-2"
@@ -50,7 +50,6 @@ export default function UnemployedStep2({ onNext, onBack }: Step2Props) {
         </span>
       </h2>
 
-      {/* Q2 */}
       <div className="mt-2">
         <p className="text-xs md:text-sm text-gray-800 mb-2">
           How many roles did you apply for through Migrate Mate?{" "}
@@ -74,7 +73,6 @@ export default function UnemployedStep2({ onNext, onBack }: Step2Props) {
         </div>
       </div>
 
-      {/* Q3 */}
       <div className="mt-5">
         <p className="text-xs md:text-sm text-gray-800 mb-2">
           How many companies did you email directly?{" "}
@@ -98,7 +96,6 @@ export default function UnemployedStep2({ onNext, onBack }: Step2Props) {
         </div>
       </div>
 
-      {/* Q4 */}
       <div className="mt-5">
         <p className="text-xs md:text-sm text-gray-800 mb-2">
           How many different companies did you interview with?{" "}
@@ -127,7 +124,7 @@ export default function UnemployedStep2({ onNext, onBack }: Step2Props) {
       <div className="mt-5 grid gap-3">
         <button
           className="w-full rounded-lg px-4 py-3 text-sm font-medium bg-[#43c463] text-white hover:bg-[#36a94e] transition-colors"
-          //   onClick={onNext}
+            onClick={onOffer}
         >
           Get 50% off <span className="font-normal">|</span>{" "}
           <span className="text-white">$12.50</span>{" "}

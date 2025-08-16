@@ -10,16 +10,16 @@ export default function InitialChoice({ onChoose }: InitialChoiceProps) {
     return (
         <div className="grid gap-6 p-4 md:grid-cols-2 md:gap-8 md:p-3">
             <div className="flex flex-col order-2 md:order-1">
-                <h2 className="text-[20px] md:text-[25px] leading-snug font-semibold text-gray-900">
+                <h2 className="text-[20px] md:text-[25px] leading-snug font-bold text-gray-900">
                     Hey mate,<br />
                     <span className="block">Quick one before you go.</span>
                 </h2>
 
-                <p className="mt-6 text-[20px] md:text-[25px] font-bold italic text-gray-900">
+                <p className="mt-4 md:mt-6 text-[20px] md:text-[25px] font-bold md:font-semibold italic text-gray-900">
                     Have you found a job yet?
                 </p>
 
-                <p className="mt-6 text-sm text-gray-800">
+                <p className="mt-4 md:mt-6 text-sm text-black">
                     Whatever your answer, we just want to help you take the next step.
                     With visa support, or by hearing how we can do better.
                 </p>

@@ -1,11 +1,12 @@
 "use client";
 
 export interface Step1Props {
+  onOffer?: () => void;
   onNext?: () => void;
   onBack?: () => void;
 }
 
-const Step1: React.FC<Step1Props> = ({ onNext, onBack }) => {
+const Step1: React.FC<Step1Props> = ({ onNext, onBack, onOffer }) => {
   return (
     <div className="flex flex-col">
       <button
@@ -33,7 +34,7 @@ const Step1: React.FC<Step1Props> = ({ onNext, onBack }) => {
         </div>
         <button
           className="w-full rounded-lg px-4 py-3 text-sm font-medium bg-[#43c463] text-white hover:bg-[#36a94e] transition-colors mb-2"
-        //   onClick={onNext}
+          onClick={onOffer}
         >
           Get 50% off
         </button>

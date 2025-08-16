@@ -5,6 +5,7 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 export interface Step3Props {
   onNext?: () => void;
   onBack?: () => void;
+  onOffer?: () => void;
 }
 
 const REASONS = [
@@ -15,7 +16,7 @@ const REASONS = [
   "Other",
 ];
 
-const Step3: React.FC<Step3Props> = ({ onNext, onBack }) => {
+const Step3: React.FC<Step3Props> = ({ onNext, onBack, onOffer }) => {
   const [selectedReason, setSelectedReason] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [details, setDetails] = useState<string>("");
@@ -125,7 +126,7 @@ const Step3: React.FC<Step3Props> = ({ onNext, onBack }) => {
           ))
         )}
       </div>
-      {/* Conditional input */}
+      
       {selectedReason === REASONS[0] && (
         <div>
           <label className="block text-[10px] md:text-sm text-gray-800 py-2">
@@ -191,7 +192,7 @@ const Step3: React.FC<Step3Props> = ({ onNext, onBack }) => {
       <div className="mt-5 grid gap-3">
         <button
           className="w-full rounded-lg px-4 py-3 text-sm font-medium bg-[#43c463] text-white hover:bg-[#36a94e] transition-colors"
-          //   onClick={onNext}
+            onClick={onOffer}
         >
           Get 50% off <span className="font-normal">|</span>{" "}
           <span className="text-white">$12.50</span>{" "}
