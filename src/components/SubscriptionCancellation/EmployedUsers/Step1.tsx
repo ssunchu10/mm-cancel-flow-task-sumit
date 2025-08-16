@@ -5,16 +5,16 @@ import { useMemo, useState } from "react";
 
 const GRID_OPTIONS = {
     foundViaMM: ["yes", "no"] as const,
-    appliedCount: ["0", "1-5", "6-20", "20+"] as const,
-    emailedCount: ["0", "1-5", "6-20", "20+"] as const,
-    interviewedCount: ["0", "1-2", "3-5", "5+"] as const
+    appliedCount: ["0", "1 - 5", "6 - 20", "20+"] as const,
+    emailedCount: ["0", "1 - 5", "6 - 20", "20+"] as const,
+    interviewedCount: ["0", "1 - 2", "3 - 5", "5+"] as const
 };
 
 const DEFAULT_STATES = {
     foundViaMM: null as "yes" | "no" | null,
-    appliedCount: undefined as "0" | "1-5" | "6-20" | "20+" | undefined,
-    emailedCount: undefined as "0" | "1-5" | "6-20" | "20+" | undefined,
-    interviewedCount: undefined as "0" | "1-2" | "3-5" | "5+" | undefined
+    appliedCount: undefined as "0" | "1 - 5" | "6 - 20" | "20+" | undefined,
+    emailedCount: undefined as "0" | "1 - 5" | "6 - 20" | "20+" | undefined,
+    interviewedCount: undefined as "0" | "1 - 2" | "3 - 5" | "5+" | undefined
 };
 
 interface EmployedStep1Props {

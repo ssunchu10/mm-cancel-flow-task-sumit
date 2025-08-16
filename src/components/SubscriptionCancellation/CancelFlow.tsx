@@ -109,7 +109,7 @@ export default function CancelFlow() {
 
   if (subscriptionContinued) {
     return (
-      <div className="min-h-screen bg-gray-300 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-300 flex items-center justify-center">
         <div className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
           <SubscriptionContinuedMessage />
         </div>
@@ -124,7 +124,7 @@ export default function CancelFlow() {
     };
 
     return (
-      <div className="min-h-screen bg-gray-300 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-300 flex items-center justify-center">
         <div className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
           <Header
             totalSteps={totalSteps}
@@ -145,7 +145,7 @@ export default function CancelFlow() {
     };
 
     return (
-      <div className="min-h-screen bg-gray-300 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-300 flex items-center justify-center">
         <div className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
           <Header
             totalSteps={totalSteps}
@@ -161,7 +161,7 @@ export default function CancelFlow() {
 
   if (choice === null) {
     return (
-      <div className="min-h-screen bg-gray-300 backdrop-blur-sm p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-300 backdrop-blur-sm flex items-center justify-center">
         <div className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
           <Header showProgress={false} />
           <InitialChoice onChoose={choose} />
@@ -172,7 +172,7 @@ export default function CancelFlow() {
 
   if (choice === "yes") {
     return (
-      <div className="min-h-screen bg-gray-300 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-300 flex items-center justify-center">
         <div className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
           <Header
             totalSteps={totalSteps}
@@ -192,7 +192,7 @@ export default function CancelFlow() {
 
   if (choice === "no") {
     return (
-      <div className="min-h-screen bg-gray-300 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-300 flex items-center justify-center">
         <div className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
           <Header
             totalSteps={totalSteps}
