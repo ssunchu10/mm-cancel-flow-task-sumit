@@ -13,20 +13,14 @@ export default function UnemployedStep2() {
   const { state, setState } = useCancelFlowStore();
   const response = state.response || {};
   const [appliedCount, setAppliedCount] = useState<string | undefined>(
-    response.appliedCount
+    undefined
   );
   const [emailedCount, setEmailedCount] = useState<string | undefined>(
-    response.emailedCount
+    undefined
   );
   const [interviewedCount, setInterviewedCount] = useState<string | undefined>(
-    response.interviewedCount
+    undefined
   );
-
-  useEffect(() => {
-    setAppliedCount(response.appliedCount);
-    setEmailedCount(response.emailedCount);
-    setInterviewedCount(response.interviewedCount);
-  }, [response]);
 
   const canContinue = useMemo(
     () => !!(appliedCount && emailedCount && interviewedCount),
@@ -41,15 +35,17 @@ export default function UnemployedStep2() {
   };
   const handleNext = () => {
     if (!canContinue) return;
+    const nextResponse = {
+      ...response,
+      appliedCount,
+      emailedCount,
+      interviewedCount,
+    };
     setState({
       currentStep: 3,
-      response: {
-        ...response,
-        appliedCount,
-        emailedCount,
-        interviewedCount,
-      },
+      response: nextResponse,
     });
+    console.log("response after setState (Step2):", nextResponse);
     // Reset local state after storing response
     setAppliedCount(undefined);
     setEmailedCount(undefined);
@@ -58,12 +54,26 @@ export default function UnemployedStep2() {
 
   return (
     <div className="flex flex-col">
-      <button
-        onClick={handleBack}
+<button
         className="md:hidden inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 mb-2"
+        type="button"
+        tabIndex={-1}
+        style={{ pointerEvents: "none" }}
       >
-        <span className="text-lg">&lt;</span>
-        Back
+        <span
+          className="text-lg cursor-pointer"
+          onClick={handleBack}
+          style={{ pointerEvents: "auto" }}
+        >
+          &lt;
+        </span>
+        <span
+          className="cursor-pointer"
+          onClick={handleBack}
+          style={{ pointerEvents: "auto" }}
+        >
+          Back
+        </span>
       </button>
 
       <h2 className="text-[20px] md:text-[25px] leading-snug font-semibold text-gray-900 mb-2">
@@ -89,7 +99,7 @@ export default function UnemployedStep2() {
               className={[
                 "rounded-lg border px-4 py-3 text-xs md:text-sm text-black",
                 appliedCount === v
-                  ? "border-[#8952fc] bg-purple-50"
+                  ? "border-[#8952fc] bg-purple-500 text-white"
                   : "border-gray-300 bg-gray-200 hover:bg-gray-300",
               ].join(" ")}
             >
@@ -112,7 +122,7 @@ export default function UnemployedStep2() {
               className={[
                 "rounded-lg border px-4 py-3 text-xs md:text-sm text-black",
                 emailedCount === v
-                  ? "border-[#8952fc] bg-purple-50"
+                  ? "border-[#8952fc] bg-purple-500 text-white"
                   : "border-gray-300 bg-gray-200 hover:bg-gray-300",
               ].join(" ")}
             >
@@ -135,7 +145,7 @@ export default function UnemployedStep2() {
               className={[
                 "rounded-lg border px-4 py-3 text-xs md:text-sm text-black",
                 interviewedCount === v
-                  ? "border-[#8952fc] bg-purple-50"
+                  ? "border-[#8952fc] bg-purple-500 text-white"
                   : "border-gray-300 bg-gray-200 hover:bg-gray-300",
               ].join(" ")}
             >

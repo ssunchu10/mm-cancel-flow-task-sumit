@@ -25,6 +25,10 @@ export default function UnemployedStep1() {
     });
   };
 
+  const handleBack = () => {
+    setState({ currentStep: 1, choice: null });
+  };
+
   const handleNext = () => {
     setOfferAccepted(false);
     setState({
@@ -46,11 +50,16 @@ export default function UnemployedStep1() {
       >
         <span
           className="text-lg cursor-pointer"
+          onClick={handleBack}
           style={{ pointerEvents: "auto" }}
         >
           &lt;
         </span>
-        <span className="cursor-pointer" style={{ pointerEvents: "auto" }}>
+        <span
+          className="cursor-pointer"
+          onClick={handleBack}
+          style={{ pointerEvents: "auto" }}
+        >
           Back
         </span>
       </button>
@@ -63,7 +72,7 @@ export default function UnemployedStep1() {
       </p>
 
       <div className="bg-purple-100 border border-purple-300 rounded-xl p-3 mb-3 md:text-center">
-        <div className="text-xl font-semibold mb-1 text-black">
+        <div className="text-3xl md:text-xl font-semibold mb-1 text-black">
           Here's 50% off until you find a job.
         </div>
         <div className="flex items-center md:justify-center gap-4 mb-2">

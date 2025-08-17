@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useCancelFlowStore } from "@/store/cancelFlowStore";
 
 const REASONS = [
@@ -14,11 +14,9 @@ const REASONS = [
 export default function UnemployedStep3() {
   const { state, setState } = useCancelFlowStore();
   const response = state.response || {};
-  const [selectedReason, setSelectedReason] = useState<string>(
-    response.selectedReason || ""
-  );
-  const [amount, setAmount] = useState<string>(response.amount || "");
-  const [details, setDetails] = useState<string>(response.details || "");
+  const [selectedReason, setSelectedReason] = useState<string>("");
+  const [amount, setAmount] = useState<string>("");
+  const [details, setDetails] = useState<string>("");
   const [showAmountError, setShowAmountError] = useState(false);
   const [showDetailsError, setShowDetailsError] = useState(false);
   const amountTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -76,15 +74,18 @@ export default function UnemployedStep3() {
   };
   const handleNext = () => {
     if (!canContinue) return;
+    const nextResponse = {
+      ...response,
+      selectedReason,
+      amount,
+      details,
+    };
     setState({
+      currentStep: 1,
       flowCompletedUnemployed: true,
-      response: {
-        ...response,
-        selectedReason,
-        amount,
-        details,
-      },
+      response: nextResponse,
     });
+    console.log("response after setState (Step3):", nextResponse);
     // Reset local state after storing response
     setSelectedReason("");
     setAmount("");
@@ -94,10 +95,25 @@ export default function UnemployedStep3() {
   return (
     <div className="flex flex-col">
       <button
-        onClick={handleBack}
         className="md:hidden inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 mb-2"
+        type="button"
+        tabIndex={-1}
+        style={{ pointerEvents: "none" }}
       >
-        <span className="text-lg">&lt;</span> Back
+        <span
+          className="text-lg cursor-pointer"
+          onClick={handleBack}
+          style={{ pointerEvents: "auto" }}
+        >
+          &lt;
+        </span>
+        <span
+          className="cursor-pointer"
+          onClick={handleBack}
+          style={{ pointerEvents: "auto" }}
+        >
+          Back
+        </span>
       </button>
       <h2 className="text-[20px] md:text-[25px] leading-snug font-semibold text-gray-900 mb-2">
         What's the main reason for cancelling?
@@ -182,7 +198,7 @@ export default function UnemployedStep3() {
       )}
       {selectedReason && selectedReason !== REASONS[0] && (
         <div>
-          <label className="block text-[10px] md:text-sm text-gray-800 py-2">
+          <label className="block text-xs md:text-sm text-gray-800 py-2">
             {selectedReason === REASONS[1] &&
               "What can we change to make the platform more helpful?*"}
             {selectedReason === REASONS[2] &&
@@ -202,11 +218,11 @@ export default function UnemployedStep3() {
             <textarea
               value={details}
               onChange={(e) => setDetails(e.target.value)}
-              placeholder=""
+              placeholder="Enter reason here.."
               className="w-full min-h-40 p-4 border border-gray-300 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-[#8952fc]/30 focus:border-[#8952fc] bg-white text-black text-xs"
               aria-label="Feedback"
             />
-            <span className="pointer-events-none absolute bottom-3 right-3 text-[11px] text-gray-500">
+            <span className={`pointer-events-none absolute bottom-3 right-3 text-[11px] text-gray-500 ${details.trim().length < 25 ? 'text-red-500' : 'text-green-500'}`}>
               Min 25 characters ({details.trim().length}/25)
             </span>
           </div>

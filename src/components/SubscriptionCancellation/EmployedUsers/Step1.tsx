@@ -108,7 +108,7 @@ export default function EmployedStep1() {
               className={[
                 "rounded-lg border px-4 py-3 text-xs md:text-sm text-black",
                 foundViaMM === v
-                  ? "border-[#8952fc] bg-purple-50"
+                  ? "border-[#8952fc] bg-purple-500 text-white"
                   : "border-gray-300 bg-gray-200 hover:bg-gray-300",
               ].join(" ")}
             >
@@ -132,7 +132,7 @@ export default function EmployedStep1() {
               className={[
                 "rounded-lg border px-4 py-3 text-xs md:text-sm text-black",
                 appliedCount === v
-                  ? "border-[#8952fc] bg-purple-50"
+                  ? "border-[#8952fc] bg-purple-500 text-white"
                   : "border-gray-300 bg-gray-200 hover:bg-gray-300",
               ].join(" ")}
             >
@@ -156,7 +156,7 @@ export default function EmployedStep1() {
               className={[
                 "rounded-lg border px-4 py-3 text-xs md:text-sm text-black",
                 emailedCount === v
-                  ? "border-[#8952fc] bg-purple-50"
+                  ? "border-[#8952fc] bg-purple-500 text-white"
                   : "border-gray-300 bg-gray-200 hover:bg-gray-300",
               ].join(" ")}
             >
@@ -180,7 +180,7 @@ export default function EmployedStep1() {
               className={[
                 "rounded-lg border px-4 py-3 text-xs md:text-sm text-black",
                 interviewedCount === v
-                  ? "border-[#8952fc] bg-purple-50"
+                  ? "border-[#8952fc] bg-purple-500 text-white"
                   : "border-gray-300 bg-gray-200 hover:bg-gray-300",
               ].join(" ")}
             >
@@ -198,7 +198,7 @@ export default function EmployedStep1() {
           disabled={!canContinue}
           className={`w-full rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
             canContinue
-              ? "bg-[#8952fc] text-white hover:bg-[#7b40fc]"
+              ? "bg-red-600 text-white hover:bg-[#7b40fc]"
               : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
         >

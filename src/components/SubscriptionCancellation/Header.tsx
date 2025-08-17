@@ -40,7 +40,7 @@ export default function Header() {
 
   return (
     <div className="relative border-b border-gray-200 py-2 mt-2 px-4 text-sm text-gray-800 text-bold">
-      {showProgress && choice !== null && !flowCompletedEmployed && (
+      {showProgress && choice !== null && !flowCompletedEmployed && !flowCompletedUnemployed && (
         <button
           onClick={handleBack}
           className="absolute left-4 top-1/2 -translate-y-1/2 items-center gap-2 text-sm text-gray-700 hover:text-gray-900 hidden md:inline-flex"
@@ -62,7 +62,7 @@ export default function Header() {
                 {Array.from({ length: totalSteps }).map((_, i) => {
                   const idx = i + 1;
                   const pillCompleted =
-                    flowCompletedEmployed || idx < currentStep;
+                    flowCompletedEmployed || flowCompletedUnemployed || idx < currentStep;
                   const isCurrent =
                     !flowCompletedEmployed && idx === currentStep;
                   return (
@@ -81,7 +81,7 @@ export default function Header() {
                 })}
               </div>
               <span className="text-xs text-gray-600">
-                {flowCompletedEmployed
+                {flowCompletedEmployed || flowCompletedUnemployed
                   ? "Completed"
                   : `Step ${currentStep} of ${totalSteps}`}
               </span>
@@ -102,7 +102,7 @@ export default function Header() {
               {Array.from({ length: totalSteps }).map((_, i) => {
                 const idx = i + 1;
                 const pillCompleted =
-                  flowCompletedEmployed || idx < currentStep;
+                  flowCompletedEmployed || flowCompletedUnemployed || idx < currentStep;
                 const isCurrent = !flowCompletedEmployed && idx === currentStep;
                 return (
                   <span
@@ -121,7 +121,7 @@ export default function Header() {
             </div>
 
             <span className="text-xs text-gray-600 whitespace-nowrap shrink-0 ml-2">
-              {flowCompletedEmployed
+              {flowCompletedEmployed || flowCompletedUnemployed
                 ? "Completed"
                 : `Step ${currentStep} of ${totalSteps}`}
             </span>

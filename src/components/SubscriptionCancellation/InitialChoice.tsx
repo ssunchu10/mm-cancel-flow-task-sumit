@@ -7,7 +7,13 @@ export default function InitialChoice() {
   const { setState } = useCancelFlowStore();
 
   const handleChoose = (choice: "yes" | "no") => {
-    setState({ choice, currentStep: 1 });
+    setState({
+      choice,
+      currentStep: 1,
+      response: {
+        employment_status: choice === "yes" ? "employed" : "unemployed",
+      },
+    });
   };
 
   return (

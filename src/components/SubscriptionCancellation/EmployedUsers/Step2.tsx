@@ -86,9 +86,9 @@ export default function EmployedStep2() {
           className="w-full min-h-40 p-4 border border-gray-300 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-[#8952fc]/30 focus:border-[#8952fc] bg-white text-black text-xs"
           aria-label="Feedback"
         />
-        <span className="pointer-events-none absolute bottom-3 right-3 text-[11px] text-gray-500">
-          Min 25 characters ({feedback.trim().length}/25)
-        </span>
+        <span className={`pointer-events-none absolute bottom-3 right-3 text-[11px] text-gray-500 ${feedback.trim().length < 25 ? 'text-red-500' : 'text-green-500'}`}>
+              Min 25 characters ({feedback.trim().length}/25)
+            </span>
       </div>
 
       <hr className="hidden md:block mt-3 mb-3 border-gray-200" />
@@ -99,7 +99,7 @@ export default function EmployedStep2() {
         className={
           "w-full rounded-lg px-4 py-3 text-sm font-medium transition-colors mt-2 " +
           (canContinue
-            ? "bg-[#8952fc] text-white hover:bg-[#7b40fc]"
+            ? "bg-red-600 text-white hover:bg-[#7b40fc]"
             : "bg-gray-200 text-gray-500 cursor-not-allowed")
         }
       >

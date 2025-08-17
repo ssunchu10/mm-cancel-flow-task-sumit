@@ -36,7 +36,14 @@ export default function SubscriptionEndMessage() {
         <hr className="my-3 border-gray-200 md:my-4" />
 
         <button
-          onClick={() => router.push("/")}
+          onClick={() => {
+            router.push("/");
+            setTimeout(() => {
+              useCancelFlowStore
+                .getState()
+                .setState({ flowCompletedUnemployed: false, choice: null, currentStep: 1 });
+            }, 300);
+          }}
           className="w-full md:w-auto rounded-xl bg-[#826eff] px-6 py-3 text-sm font-semibold text-white shadow hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-[#826eff]/40"
         >
           Back to Jobs

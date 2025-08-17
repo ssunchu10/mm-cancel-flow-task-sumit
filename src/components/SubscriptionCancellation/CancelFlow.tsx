@@ -60,7 +60,7 @@ export default function CancelFlow() {
     );
   }
 
-  if (flowCompletedUnemployed) {
+  if (flowCompletedUnemployed && choice != null) {
     return (
       <div className="min-h-screen bg-gray-300 flex items-center justify-center">
         <div className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl border border-gray-200 overflow-hidden">

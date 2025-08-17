@@ -159,7 +159,7 @@ export default function EmployedStep3() {
         className={
           "w-full rounded-lg px-4 py-3 text-sm font-medium transition-colors " +
           (canSubmit
-            ? "bg-[#8952fc] text-white hover:bg-[#7b40fc]"
+            ? "bg-red-600 text-white hover:bg-[#7b40fc]"
             : "bg-gray-200 text-gray-500 cursor-not-allowed")
         }
       >
