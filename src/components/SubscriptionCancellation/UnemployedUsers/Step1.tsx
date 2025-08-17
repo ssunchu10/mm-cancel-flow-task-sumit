@@ -1,20 +1,58 @@
 "use client";
 
-export interface Step1Props {
-  onOffer?: () => void;
-  onNext?: () => void;
-  onBack?: () => void;
-}
+import { useCancelFlowStore } from "@/store/cancelFlowStore";
+import { useState, useEffect } from "react";
 
-const Step1: React.FC<Step1Props> = ({ onNext, onBack, onOffer }) => {
+export default function UnemployedStep1() {
+  const { state, setState } = useCancelFlowStore();
+  const response = state.response || {};
+  const [offerAccepted, setOfferAccepted] = useState(
+    response.offerAccepted ?? false
+  );
+
+  useEffect(() => {
+    setOfferAccepted(response.offerAccepted ?? false);
+  }, [response]);
+
+  const handleOffer = () => {
+    setOfferAccepted(true);
+    setState({
+      response: {
+        ...response,
+        offerAccepted: true,
+      },
+      subscriptionContinued: true,
+    });
+  };
+
+  const handleNext = () => {
+    setOfferAccepted(false);
+    setState({
+      response: {
+        ...response,
+        offerAccepted: false,
+      },
+      currentStep: 2,
+    });
+  };
+
   return (
     <div className="flex flex-col">
       <button
-        onClick={onBack}
         className="md:hidden inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 mb-2"
+        type="button"
+        tabIndex={-1}
+        style={{ pointerEvents: "none" }}
       >
-        <span className="text-lg">&lt;</span>
-        Back
+        <span
+          className="text-lg cursor-pointer"
+          style={{ pointerEvents: "auto" }}
+        >
+          &lt;
+        </span>
+        <span className="cursor-pointer" style={{ pointerEvents: "auto" }}>
+          Back
+        </span>
       </button>
 
       <h2 className="text-[20px] md:text-[25px] leading-snug font-semibold text-gray-900 mb-3">
@@ -34,12 +72,12 @@ const Step1: React.FC<Step1Props> = ({ onNext, onBack, onOffer }) => {
         </div>
         <button
           className="w-full rounded-lg px-4 py-3 text-sm font-medium bg-[#43c463] text-white hover:bg-[#36a94e] transition-colors mb-2"
-          onClick={onOffer}
+          onClick={handleOffer}
         >
           Get 50% off
         </button>
         <div className="text-[10px] md:text-xs text-center text-black italic">
-          You won’t be charged until your next billing date.
+          You wont be charged until your next billing date.
         </div>
       </div>
 
@@ -47,12 +85,10 @@ const Step1: React.FC<Step1Props> = ({ onNext, onBack, onOffer }) => {
 
       <button
         className="w-full border border-gray-300 rounded-lg px-4 py-3 mt-2 text-gray-700 font-semibold bg-white hover:bg-gray-100 transition"
-        onClick={onNext}
+        onClick={handleNext}
       >
         No thanks
       </button>
     </div>
   );
-};
-
-export default Step1;
+}

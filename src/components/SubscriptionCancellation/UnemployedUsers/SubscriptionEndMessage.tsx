@@ -2,13 +2,12 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useCancelFlowStore } from "@/store/cancelFlowStore";
 
-interface Props {
-  endDate: string;
-}
-
-export default function SubscriptionEndMessage({ endDate }: Props) {
+export default function SubscriptionEndMessage() {
   const router = useRouter();
+  const { state } = useCancelFlowStore();
+  const endDate = state.subscriptionEndDate;
   return (
     <div className="grid gap-6 p-6 md:grid-cols-2 md:gap-10">
       {/* Left text */}
@@ -18,17 +17,17 @@ export default function SubscriptionEndMessage({ endDate }: Props) {
         </h1>
 
         <p className="mt-4 text-lg font-semibold text-black">
-          Thanks for being with us, and you’re always welcome back.
+          Thanks for being with us, and you're always welcome back.
         </p>
 
         <p className="mt-3 text-sm text-black leading-relaxed">
           Your subscription is set to end on {endDate}. <br />
-          You’ll still have full access until then. No further charges after
+          You'll still have full access until then. No further charges after
           that.
         </p>
 
         <p className="mt-2 text-[11px] md:text-[13px] text-gray-500 leading-relaxed">
-          Changed your mind? 
+          Changed your mind?
           <span className="hidden md:inline">&nbsp;</span>
           <br className="block md:hidden" />
           You can reactivate anytime before your end date.

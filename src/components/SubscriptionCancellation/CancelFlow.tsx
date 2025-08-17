@@ -1,7 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 import Header from "./Header";
 import InitialChoice from "./InitialChoice";
 import EmployedStep1 from "./EmployedUsers/Step1";
@@ -14,96 +12,41 @@ import UnemployedStep3 from "./UnemployedUsers/Step3";
 import SubscriptionEndMessage from "./UnemployedUsers/SubscriptionEndMessage";
 import SubscriptionContinuedMessage from "./SubscriptionContinuedMessage";
 import EmployedEndMessage from "./EmployedUsers/SubscriptionEndMessage";
-
-type Choice = "yes" | "no" | null;
+import { useCancelFlowStore } from "@/store/cancelFlowStore";
 
 export default function CancelFlow() {
-  const router = useRouter();
-  const [choice, setChoice] = useState<Choice>(null);
-  const [currentStep, setCurrentStep] = useState(1);
-  const [foundViaMM, setFoundViaMM] = useState<"yes" | "no" | null>(null);
-  const [hasLawyer, setHasLawyer] = useState<"yes" | "no" | null>(null);
-  const [flowCompletedUnemployed, setFlowCompletedUnemployed] = useState(false);
-  const [flowCompletedEmployed, setFlowCompletedEmployed] = useState(false);
-  const [subscriptionContinued, setSubscriptionContinued] = useState(false);
-  const subscriptionEndDate = "XX date";
+  const { state } = useCancelFlowStore();
+  const {
+    choice = null,
+    currentStep = 1,
+    flowCompletedUnemployed = false,
+    flowCompletedEmployed = false,
+    subscriptionContinued = false,
+  } = state as any;
 
-  const totalSteps = 3;
-
-  const handleBack = () => {
-    if ((choice === "yes" || choice === "no") && currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    } else if ((choice === "yes" || choice === "no") && currentStep === 1) {
-      setChoice(null);
-      setCurrentStep(1);
-    } else {
-      router.push("/");
-    }
-  };
-
-  const handleStep1Next = (foundViaMMAnswer: "yes" | "no") => {
-    setFoundViaMM(foundViaMMAnswer);
-    setCurrentStep(2);
-  };
-
-  const handleStep3Next = (hasLawyer: "yes" | "no") => {
-    setHasLawyer(hasLawyer);
-    setFlowCompletedEmployed(true);
-  };
-
-  const choose = (val: "yes" | "no") => {
-    setChoice(val);
-    setCurrentStep(1);
-    setFlowCompletedUnemployed(false);
-    setFlowCompletedEmployed(false);
-    setSubscriptionContinued(false);
-  };
+  const response = state.response; // Ensure response is always available to steps and updated on navigation
 
   const renderEmployedSteps = () => {
     switch (currentStep) {
       case 1:
-        return <EmployedStep1 onNext={handleStep1Next} onBack={handleBack} />;
+        return <EmployedStep1 />;
       case 2:
-        return (
-          <EmployedStep2 onNext={() => setCurrentStep(3)} onBack={handleBack} />
-        );
+        return <EmployedStep2 />;
       case 3:
-        return (
-          <EmployedStep3
-            onNext={handleStep3Next}
-            onBack={handleBack}
-            foundViaMM={foundViaMM!}
-          />
-        );
+        return <EmployedStep3 />;
     }
   };
 
   const renderUnemployedSteps = () => {
     switch (currentStep) {
       case 1:
-        return (
-          <UnemployedStep1
-            onNext={() => setCurrentStep(2)}
-            onBack={handleBack}
-            onOffer={() => setSubscriptionContinued(true)}
-          />
-        );
+        return <UnemployedStep1 />;
       case 2:
-        return (
-          <UnemployedStep2
-            onNext={() => setCurrentStep(3)}
-            onBack={handleBack}
-            onOffer={() => setSubscriptionContinued(true)}
-          />
-        );
+        return <UnemployedStep2 />;
       case 3:
-        return (
-          <UnemployedStep3
-            onNext={() => setFlowCompletedUnemployed(true)}
-            onBack={handleBack}
-            onOffer={() => setSubscriptionContinued(true)}
-          />
-        );
+        return <UnemployedStep3 />;
+      default:
+        return null;
     }
   };
 
@@ -118,42 +61,22 @@ export default function CancelFlow() {
   }
 
   if (flowCompletedUnemployed) {
-    const backFromEnd = () => {
-      setFlowCompletedUnemployed(false);
-      setCurrentStep(totalSteps);
-    };
-
     return (
       <div className="min-h-screen bg-gray-300 flex items-center justify-center">
         <div className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
-          <Header
-            totalSteps={totalSteps}
-            currentStep={totalSteps + 1}
-            onBack={backFromEnd}
-            showProgress
-          />
-          <SubscriptionEndMessage endDate={subscriptionEndDate} />
+          <Header />
+          <SubscriptionEndMessage />
         </div>
       </div>
     );
   }
 
-  if (flowCompletedEmployed) {
-    const backFromEmployedEnd = () => {
-      setFlowCompletedEmployed(false);
-      setCurrentStep(totalSteps);
-    };
-
+  if (flowCompletedEmployed && choice != null) {
     return (
       <div className="min-h-screen bg-gray-300 flex items-center justify-center">
         <div className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
-          <Header
-            totalSteps={totalSteps}
-            currentStep={totalSteps + 1}
-            onBack={backFromEmployedEnd}
-            showProgress
-          />
-          <EmployedEndMessage hasLawyer={hasLawyer === "yes"} />
+          <Header />
+          <EmployedEndMessage />
         </div>
       </div>
     );
@@ -163,8 +86,8 @@ export default function CancelFlow() {
     return (
       <div className="min-h-screen bg-gray-300 backdrop-blur-sm flex items-center justify-center">
         <div className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
-          <Header showProgress={false} />
-          <InitialChoice onChoose={choose} />
+          <Header />
+          <InitialChoice />
         </div>
       </div>
     );
@@ -174,13 +97,7 @@ export default function CancelFlow() {
     return (
       <div className="min-h-screen bg-gray-300 flex items-center justify-center">
         <div className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
-          <Header
-            totalSteps={totalSteps}
-            currentStep={currentStep}
-            onBack={handleBack}
-            showProgress={true}
-          />
-
+          <Header />
           <div className="grid gap-6 p-4 md:grid-cols-2 md:gap-8 md:p-3">
             {renderEmployedSteps()}
             <MainImage />
@@ -194,13 +111,7 @@ export default function CancelFlow() {
     return (
       <div className="min-h-screen bg-gray-300 flex items-center justify-center">
         <div className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
-          <Header
-            totalSteps={totalSteps}
-            currentStep={currentStep}
-            onBack={handleBack}
-            showProgress={true}
-          />
-
+          <Header />
           <div className="grid gap-6 p-4 md:grid-cols-2 md:gap-8 md:p-3">
             {renderUnemployedSteps()}
             <MainImage />

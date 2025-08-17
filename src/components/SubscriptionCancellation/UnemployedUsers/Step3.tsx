@@ -1,12 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
-
-export interface Step3Props {
-  onNext?: () => void;
-  onBack?: () => void;
-  onOffer?: () => void;
-}
+import { useCancelFlowStore } from "@/store/cancelFlowStore";
 
 const REASONS = [
   "Too expensive",
@@ -16,10 +11,14 @@ const REASONS = [
   "Other",
 ];
 
-const Step3: React.FC<Step3Props> = ({ onNext, onBack, onOffer }) => {
-  const [selectedReason, setSelectedReason] = useState<string>("");
-  const [amount, setAmount] = useState<string>("");
-  const [details, setDetails] = useState<string>("");
+export default function UnemployedStep3() {
+  const { state, setState } = useCancelFlowStore();
+  const response = state.response || {};
+  const [selectedReason, setSelectedReason] = useState<string>(
+    response.selectedReason || ""
+  );
+  const [amount, setAmount] = useState<string>(response.amount || "");
+  const [details, setDetails] = useState<string>(response.details || "");
   const [showAmountError, setShowAmountError] = useState(false);
   const [showDetailsError, setShowDetailsError] = useState(false);
   const amountTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -69,10 +68,33 @@ const Step3: React.FC<Step3Props> = ({ onNext, onBack, onOffer }) => {
     };
   }, [details, isDetailsValid, selectedReason]);
 
+  const handleBack = () => {
+    setState({ currentStep: 2 });
+  };
+  const handleOffer = () => {
+    setState({ subscriptionContinued: true });
+  };
+  const handleNext = () => {
+    if (!canContinue) return;
+    setState({
+      flowCompletedUnemployed: true,
+      response: {
+        ...response,
+        selectedReason,
+        amount,
+        details,
+      },
+    });
+    // Reset local state after storing response
+    setSelectedReason("");
+    setAmount("");
+    setDetails("");
+  };
+
   return (
     <div className="flex flex-col">
       <button
-        onClick={onBack}
+        onClick={handleBack}
         className="md:hidden inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 mb-2"
       >
         <span className="text-lg">&lt;</span> Back
@@ -101,7 +123,9 @@ const Step3: React.FC<Step3Props> = ({ onNext, onBack, onOffer }) => {
               }}
               className="accent-black-600"
             />
-            <span className="text-xs md:text-sm  text-gray-900">{selectedReason}</span>
+            <span className="text-xs md:text-sm  text-gray-900">
+              {selectedReason}
+            </span>
           </label>
         ) : (
           REASONS.map((reason) => (
@@ -126,7 +150,7 @@ const Step3: React.FC<Step3Props> = ({ onNext, onBack, onOffer }) => {
           ))
         )}
       </div>
-      
+
       {selectedReason === REASONS[0] && (
         <div>
           <label className="block text-[10px] md:text-sm text-gray-800 py-2">
@@ -192,7 +216,7 @@ const Step3: React.FC<Step3Props> = ({ onNext, onBack, onOffer }) => {
       <div className="mt-5 grid gap-3">
         <button
           className="w-full rounded-lg px-4 py-3 text-sm font-medium bg-[#43c463] text-white hover:bg-[#36a94e] transition-colors"
-            onClick={onOffer}
+          onClick={handleOffer}
         >
           Get 50% off <span className="font-normal">|</span>{" "}
           <span className="text-white">$12.50</span>{" "}
@@ -205,13 +229,11 @@ const Step3: React.FC<Step3Props> = ({ onNext, onBack, onOffer }) => {
               ? "bg-red-600 text-white hover:bg-[#7b40fc]"
               : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
-          onClick={canContinue ? onNext : undefined}
+          onClick={handleNext}
         >
           Complete Cancellation
         </button>
       </div>
     </div>
   );
-};
-
-export default Step3;
+}

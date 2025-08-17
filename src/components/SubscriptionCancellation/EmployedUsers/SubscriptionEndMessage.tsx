@@ -3,21 +3,28 @@
 import Image from "next/image";
 import MainImage from "../MainImage";
 import { useRouter } from "next/navigation";
+import { useCancelFlowStore } from "@/store/cancelFlowStore";
 
-interface EmployedEndMessageProps {
-  hasLawyer: boolean;
-}
-
-export default function EmployedEndMessage({
-  hasLawyer,
-}: EmployedEndMessageProps) {
+export default function EmployedEndMessage() {
   const router = useRouter();
+  const { state } = useCancelFlowStore();
+  const hasLawyer = state.response?.hasLawyer as "yes" | "no" | null;
 
   const handleFinish = () => {
     router.push("/");
+    setTimeout(() => {
+      useCancelFlowStore.getState().setState({
+        choice: null,
+        currentStep: 1,
+        foundViaMM: null,
+        flowCompletedUnemployed: false,
+        flowCompletedEmployed: false,
+        subscriptionContinued: false,
+      });
+    }, 300);
   };
 
-  if (hasLawyer) {
+  if (hasLawyer === "yes") {
     return (
       <div className="grid gap-6 p-6 md:grid-cols-2 md:gap-8">
         <div className="relative h-52 md:h-auto rounded-lg overflow-hidden order-1 md:order-2">
@@ -32,10 +39,10 @@ export default function EmployedEndMessage({
 
         <div className="flex flex-col justify-center text-left order-2 md:order-1">
           <h2 className="text-2xl font-semibold mb-4 text-black">
-            All done, your cancellation’s been processed.
+            All done, your cancellation's been processed.
           </h2>
           <p className="mb-4 font-semibold text-gray-700">
-            We’re stoked to hear you’ve landed a job and sorted your visa. Big
+            We're stoked to hear you've landed a job and sorted your visa. Big
             congrats from the team. 🙌
           </p>
           <button
@@ -53,7 +60,7 @@ export default function EmployedEndMessage({
     <div className="grid gap-6 p-6 md:grid-cols-2 md:gap-8">
       <div className="flex flex-col justify-center text-left">
         <h2 className="text-xl md:text-2xl font-semibold leading-tight mb-4 text-black">
-          Your cancellation’s all sorted, mate, no more charges.
+          Your cancellation's all sorted, mate, no more charges.
         </h2>
 
         <div className="mb-4 rounded-xl bg-gray-100 border border-gray-200 p-4 shadow-sm">
@@ -77,15 +84,15 @@ export default function EmployedEndMessage({
 
               <div className="mt-3 space-y-2 text-gray-700">
                 <p className="font-medium">
-                  I’ll be reaching out soon to help with the visa side of
+                  I'll be reaching out soon to help with the visa side of
                   things.
                 </p>
                 <p>
-                  We’ve got your back, whether it’s questions, paperwork, or
+                  We've got your back, whether it's questions, paperwork, or
                   just figuring out your options.
                 </p>
                 <p>
-                  Keep an eye on your inbox, I’ll be in touch{" "}
+                  Keep an eye on your inbox, I'll be in touch{" "}
                   <a href="#" className="underline underline-offset-2">
                     shortly
                   </a>
@@ -111,20 +118,22 @@ export default function EmployedEndMessage({
                 <p className="text-sm font-semibold leading-tight text-black">
                   Mihailo Bozic
                 </p>
-                <p className="text-xs text-gray-600">&lt;mihailo@migratemate.co&gt;</p>
+                <p className="text-xs text-gray-600">
+                  &lt;mihailo@migratemate.co&gt;
+                </p>
               </div>
             </div>
 
             <div className="text-sm text-gray-800 space-y-2 text-gray-700">
               <p className="font-medium">
-                I’ll be reaching out soon to help with the visa side of things.
+                I'll be reaching out soon to help with the visa side of things.
               </p>
               <p>
-                We’ve got your back, whether it’s questions, paperwork, or just
+                We've got your back, whether it's questions, paperwork, or just
                 figuring out your options.
               </p>
               <p className="text-black">
-                Keep an eye on your inbox, I’ll be in touch{" "}
+                Keep an eye on your inbox, I'll be in touch{" "}
                 <a href="#" className="underline underline-offset-2">
                   shortly
                 </a>

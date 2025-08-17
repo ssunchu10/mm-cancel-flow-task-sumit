@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { useCancelFlowStore } from "@/store/cancelFlowStore";
 
 const GRID_OPTIONS = {
   appliedCount: ["0", "1-5", "6-20", "20+"] as const,
@@ -8,32 +9,57 @@ const GRID_OPTIONS = {
   interviewedCount: ["0", "1-2", "3-5", "5+"] as const,
 };
 
-export interface Step2Props {
-  onNext?: () => void;
-  onBack?: () => void;
-  onOffer?: () => void;
-}
-
-export default function UnemployedStep2({ onNext, onBack, onOffer }: Step2Props) {
+export default function UnemployedStep2() {
+  const { state, setState } = useCancelFlowStore();
+  const response = state.response || {};
   const [appliedCount, setAppliedCount] = useState<string | undefined>(
-    undefined
+    response.appliedCount
   );
   const [emailedCount, setEmailedCount] = useState<string | undefined>(
-    undefined
+    response.emailedCount
   );
   const [interviewedCount, setInterviewedCount] = useState<string | undefined>(
-    undefined
+    response.interviewedCount
   );
+
+  useEffect(() => {
+    setAppliedCount(response.appliedCount);
+    setEmailedCount(response.emailedCount);
+    setInterviewedCount(response.interviewedCount);
+  }, [response]);
 
   const canContinue = useMemo(
     () => !!(appliedCount && emailedCount && interviewedCount),
     [appliedCount, emailedCount, interviewedCount]
   );
 
+  const handleBack = () => {
+    setState({ currentStep: 1 });
+  };
+  const handleOffer = () => {
+    setState({ subscriptionContinued: true });
+  };
+  const handleNext = () => {
+    if (!canContinue) return;
+    setState({
+      currentStep: 3,
+      response: {
+        ...response,
+        appliedCount,
+        emailedCount,
+        interviewedCount,
+      },
+    });
+    // Reset local state after storing response
+    setAppliedCount(undefined);
+    setEmailedCount(undefined);
+    setInterviewedCount(undefined);
+  };
+
   return (
     <div className="flex flex-col">
       <button
-        onClick={onBack}
+        onClick={handleBack}
         className="md:hidden inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 mb-2"
       >
         <span className="text-lg">&lt;</span>
@@ -124,7 +150,7 @@ export default function UnemployedStep2({ onNext, onBack, onOffer }: Step2Props)
       <div className="mt-5 grid gap-3">
         <button
           className="w-full rounded-lg px-4 py-3 text-sm font-medium bg-[#43c463] text-white hover:bg-[#36a94e] transition-colors"
-            onClick={onOffer}
+          onClick={handleOffer}
         >
           Get 50% off <span className="font-normal">|</span>{" "}
           <span className="text-white">$12.50</span>{" "}
@@ -137,7 +163,7 @@ export default function UnemployedStep2({ onNext, onBack, onOffer }: Step2Props)
               ? "bg-red-600 text-white hover:bg-[#7b40fc]"
               : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
-          onClick={canContinue ? onNext : undefined}
+          onClick={handleNext}
         >
           Continue
         </button>

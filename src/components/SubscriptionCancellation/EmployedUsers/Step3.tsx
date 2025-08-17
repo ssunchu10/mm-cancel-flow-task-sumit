@@ -1,67 +1,106 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, use } from "react";
+import { useCancelFlowStore } from "@/store/cancelFlowStore";
 
-interface EmployedStep3Props {
-  onNext: (hasLawyer: "yes" | "no") => void;
-  onBack: () => void;
-  foundViaMM: "yes" | "no";
-}
+export default function EmployedStep3() {
+  const { state, setState } = useCancelFlowStore();
+  const response = state.response || {};
+  const foundViaMM = response.foundViaMM as "yes" | "no" | undefined;
 
-export default function EmployedStep3({ onNext, onBack, foundViaMM }: EmployedStep3Props) {
   const [hasLawyer, setHasLawyer] = useState<"yes" | "no" | null>(null);
-  const [visa, setVisa] = useState("");
+  const [visa, setVisa] = useState<string>("");
 
   const canSubmit = useMemo(
     () => !!hasLawyer && visa.trim().length > 0,
     [hasLawyer, visa]
   );
 
+  const resetLocal = () => {
+    setHasLawyer(null);
+    setVisa("");
+  };
+
   const complete = () => {
     if (!canSubmit) return;
-    onNext(hasLawyer!);
+
+    const nextResponse = {
+      ...response,
+      hasLawyer,
+      visa,
+    };
+
+    setState({
+      currentStep: 1,
+      flowCompletedEmployed: true,
+      response: nextResponse,
+    });
+
+    console.log("saved response (final):", nextResponse);
+    resetLocal();
+  };
+
+  const handleBack = () => {
+    setState({
+      currentStep: 2,
+      response: { ...response },
+    });
   };
 
   return (
     <div className="flex flex-col">
       <button
-        onClick={onBack}
         className="md:hidden inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 mb-2"
+        type="button"
+        tabIndex={-1}
+        style={{ pointerEvents: "none" }}
       >
-        <span className="text-lg">&lt;</span>
-        Back
+        <span
+          className="text-lg cursor-pointer"
+          onClick={handleBack}
+          style={{ pointerEvents: "auto" }}
+        >
+          &lt;
+        </span>
+        <span
+          className="cursor-pointer"
+          onClick={handleBack}
+          style={{ pointerEvents: "auto" }}
+        >
+          Back
+        </span>
       </button>
 
       <h2 className="text-[20px] md:text-[25px] leading-snug font-semibold text-gray-900">
         {foundViaMM === "yes" ? (
-          <>
-            <span>We helped you land the job, now let’s help you secure your visa.</span>
-          </>
+          <span>
+            We helped you land the job, now let's help you secure your visa.
+          </span>
         ) : (
           <>
             <span>You landed the job!</span>
             <br className="sm:block" />
-            <em className="italic">That’s what we live for.</em>
+            <em className="italic">That's what we live for.</em>
           </>
         )}
       </h2>
 
       {foundViaMM === "no" && (
         <p className="text-xs md:text-sm text-black font-semibold mt-2">
-          Even if it wasn’t through Migrate Mate,
+          Even if it wasn't through Migrate Mate,
           <br className="sm:block" />
           let us help get your visa sorted.
         </p>
       )}
 
-<     hr className="md:hidden   mt-2 mb-2 border-gray-200" />
+      <hr className="md:hidden mt-2 mb-2 border-gray-200" />
 
       <p className="text-xs md:text-sm text-black mt-2">
         Is your company providing an immigration lawyer to help with your visa?
       </p>
 
       <div className="mt-4 space-y-3">
-        {(!hasLawyer || hasLawyer === "yes") && (
+        {!hasLawyer || hasLawyer === "yes" ? (
           <label className="flex items-center gap-3 text-sm text-gray-900">
             <input
               type="radio"
@@ -72,9 +111,9 @@ export default function EmployedStep3({ onNext, onBack, foundViaMM }: EmployedSt
             />
             Yes
           </label>
-        )}
+        ) : null}
 
-        {(!hasLawyer || hasLawyer === "no") && (
+        {!hasLawyer || hasLawyer === "no" ? (
           <label className="flex items-center gap-3 text-sm text-gray-900">
             <input
               type="radio"
@@ -85,7 +124,7 @@ export default function EmployedStep3({ onNext, onBack, foundViaMM }: EmployedSt
             />
             No
           </label>
-        )}
+        ) : null}
       </div>
 
       {hasLawyer && (
