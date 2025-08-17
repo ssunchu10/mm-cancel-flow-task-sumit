@@ -1,46 +1,60 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import EmailInfo from "@/components/AccountInformation/EmailInfo";
+import SubscriptionStatus from "@/components/AccountInformation/SubscriptionStatus";
+import MonthlyPrice from "@/components/AccountInformation/MonthlyPrice";
+import NextPayment from "@/components/AccountInformation/NextPayment";
 
-// Mock user data for UI display
-const mockUser = {
-  email: 'user@example.com',
-  id: '1'
-};
+interface User {
+  id: string;
+  email: string;
+  created_at: string;
+}
 
-// Mock subscription data for UI display
-const mockSubscriptionData = {
-  status: 'active',
-  isTrialSubscription: false,
-  cancelAtPeriodEnd: false,
-  currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
-  monthlyPrice: 25,
-  isUCStudent: false,
-  hasManagedAccess: false,
-  managedOrganization: null,
-  downsellAccepted: false
-};
+interface Subscription {
+  id: string;
+  user_id: string;
+  monthly_price: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
 
 export default function ProfilePage() {
-  const [loading] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [loading, setLoading] = useState(true);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const router = useRouter();
-  
-  // New state for settings toggle
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch("/api/user-subscription")
+      .then((res) => res.json())
+      .then((data) => {
+        setUser(data.user);
+        setSubscription(data.subscription);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("API user-subscription error:", err);
+        setLoading(false);
+      });
+  }, []);
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
-    // Simulate sign out delay
     setTimeout(() => {
-      console.log('User signed out');
+      console.log("User signed out");
       setIsSigningOut(false);
     }, 1000);
   };
 
   const handleClose = () => {
-    console.log('Navigate to jobs');
+    console.log("Navigate to jobs");
   };
 
   if (loading) {
@@ -58,7 +72,7 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
-            
+
             {/* Profile Info skeleton */}
             <div className="px-6 py-6 border-b border-gray-200">
               <div className="h-6 w-56 bg-gradient-to-r from-gray-200 to-gray-300 rounded mb-4 animate-pulse"></div>
@@ -77,13 +91,13 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
-            
+
             {/* Support skeleton */}
             <div className="px-6 py-6 border-b border-gray-200">
               <div className="h-6 w-24 bg-gradient-to-r from-gray-200 to-gray-300 rounded mb-4 animate-pulse"></div>
               <div className="h-12 w-full bg-gradient-to-r from-gray-200 to-gray-300 rounded-lg animate-pulse"></div>
             </div>
-            
+
             {/* Subscription Management skeleton */}
             <div className="px-6 py-6">
               <div className="h-6 w-56 bg-gradient-to-r from-gray-200 to-gray-300 rounded mb-4 animate-pulse"></div>
@@ -135,53 +149,23 @@ export default function ProfilePage() {
           
           {/* Profile Info */}
           <div className="px-6 py-6 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Account Information</h2>
+            <h2 className="text-lg font-medium text-gray-900 mb-4">
+              Account Information
+            </h2>
             <div className="space-y-3">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Email</p>
-                <p className="mt-1 text-md text-gray-900">{mockUser.email}</p>
-              </div>
+              <EmailInfo email={user?.email || ""} />
               <div className="pt-2 space-y-3">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="flex-shrink-0">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <p className="text-sm font-medium text-gray-900">Subscription status</p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    {mockSubscriptionData.status === 'active' && !mockSubscriptionData.isTrialSubscription && !mockSubscriptionData.cancelAtPeriodEnd && (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-50 text-green-700 border border-green-200">
-                        Active
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {mockSubscriptionData.status === 'active' && !mockSubscriptionData.isTrialSubscription && !mockSubscriptionData.cancelAtPeriodEnd && (
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex-shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                      <p className="text-sm font-medium text-gray-900">Next payment</p>
-                    </div>
-                    <p className="text-sm font-medium text-gray-900">
-                      {mockSubscriptionData.currentPeriodEnd && new Date(mockSubscriptionData.currentPeriodEnd).toLocaleDateString('en-US', {
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </p>
-                  </div>
+                <SubscriptionStatus status={subscription?.status || ""} />
+                {subscription && (
+                  <>
+                    <MonthlyPrice monthlyPrice={subscription.monthly_price} />
+                    <NextPayment updatedAt={subscription.updated_at} />
+                  </>
                 )}
               </div>
             </div>
           </div>
-          
+
           {/* Support Button */}
           <div className="px-6 py-6 border-b border-gray-200">
             <button
@@ -258,7 +242,9 @@ export default function ProfilePage() {
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                       </svg>
-                      <span className="text-sm font-medium">Cancel Migrate Mate</span>
+                      <span className="text-sm font-medium">
+                        Cancel Migrate Mate
+                      </span>
                     </button>
                   </div>
                 </div>

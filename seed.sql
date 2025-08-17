@@ -21,13 +21,21 @@ CREATE TABLE IF NOT EXISTS subscriptions (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create cancellations table
 CREATE TABLE IF NOT EXISTS cancellations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
   subscription_id UUID REFERENCES subscriptions(id) ON DELETE CASCADE,
+  employment_status TEXT CHECK (employment_status IN ('employed', 'unemployed')),
+  found_via_mm BOOLEAN,
+  applied_count TEXT,
+  emailed_count TEXT,
+  interviewed_count TEXT,
+  has_lawyer BOOLEAN,
+  visa_type TEXT,
+  feedback TEXT,
+  cancel_reason TEXT,
+  details TEXT,
   downsell_variant TEXT NOT NULL CHECK (downsell_variant IN ('A', 'B')),
-  reason TEXT,
   accepted_downsell BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -52,6 +60,12 @@ CREATE POLICY "Users can insert own cancellations" ON cancellations
 
 CREATE POLICY "Users can view own cancellations" ON cancellations
   FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own cancellations" ON cancellations
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own cancellations" ON cancellations
+  FOR DELETE USING (auth.uid() = user_id);
 
 -- Seed data
 INSERT INTO users (id, email) VALUES
