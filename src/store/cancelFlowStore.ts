@@ -37,6 +37,8 @@ export const CancelFlowSchema = z.object({
   subscriptionEndDate: z.string().default("XX date"),
   response: z.record(z.string(), z.any()).default({}),
   csrfToken: z.string().optional(),
+  downsell_variant: z.string().optional(),
+  accepted_downsell: z.boolean().optional(),
 });
 
 export type CancelFlowState = z.infer<typeof CancelFlowSchema>;
@@ -59,6 +61,8 @@ export const useCancelFlowStore = create<{
     subscriptionEndDate: "XX date",
     response: {},
     csrfToken: "",
+    downsell_variant: "",
+    accepted_downsell: false,
   },
   setState: (newState) => {
     const merged = { ...useCancelFlowStore.getState().state, ...newState };

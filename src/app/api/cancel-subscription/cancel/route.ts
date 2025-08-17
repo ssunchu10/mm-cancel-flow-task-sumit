@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { supabase, supabaseAdmin } from "@/lib/supabase";
-import { getOrCreateCancellation } from "@/utils/server/cancel";
 import { verifyCsrf } from "@/utils/server/csrf";
 import { cancellationInputSchema } from "@/utils/validation";
 

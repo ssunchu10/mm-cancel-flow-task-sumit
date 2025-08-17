@@ -2,6 +2,8 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { useCancelFlowStore } from "@/store/cancelFlowStore";
+import { downsellPriceCents } from "@/utils/downsellVariant";
+import { callDownsellAcceptedApi } from "@/lib/api/downsellAccepted";
 
 const GRID_OPTIONS = {
   appliedCount: ["0", "1-5", "6-20", "20+"] as const,
@@ -22,6 +24,13 @@ export default function UnemployedStep2() {
     undefined
   );
 
+  const subscription = state.subscription;
+  const monthlyPrice = subscription?.monthly_price || 0;
+  const monthlyPriceFormatted = (monthlyPrice / 100).toFixed(2);
+  const downsellPrice = (downsellPriceCents(monthlyPrice || 0) / 100).toFixed(
+    2
+  );
+
   const canContinue = useMemo(
     () => !!(appliedCount && emailedCount && interviewedCount),
     [appliedCount, emailedCount, interviewedCount]
@@ -30,8 +39,15 @@ export default function UnemployedStep2() {
   const handleBack = () => {
     setState({ currentStep: 1 });
   };
-  const handleOffer = () => {
-    setState({ subscriptionContinued: true });
+  const handleOffer = async () => {
+    try {
+      await callDownsellAcceptedApi();
+      setState({ subscriptionContinued: true });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to accept offer";
+      alert(errorMessage);
+    }
   };
   const handleNext = () => {
     if (!canContinue) return;
@@ -52,7 +68,7 @@ export default function UnemployedStep2() {
 
   return (
     <div className="flex flex-col">
-<button
+      <button
         className="md:hidden inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 mb-2"
         type="button"
         tabIndex={-1}
@@ -156,14 +172,19 @@ export default function UnemployedStep2() {
       <hr className="mt-5 border-gray-200" />
 
       <div className="mt-5 grid gap-3">
-        <button
-          className="w-full rounded-lg px-4 py-3 text-sm font-medium bg-[#43c463] text-white hover:bg-[#36a94e] transition-colors"
-          onClick={handleOffer}
-        >
-          Get 50% off <span className="font-normal">|</span>{" "}
-          <span className="text-white">$12.50</span>{" "}
-          <span className="line-through text-gray-200">$25</span>
-        </button>
+        {state.accepted_downsell || (
+          <button
+            className="w-full rounded-lg px-4 py-3 text-sm font-medium bg-[#43c463] text-white hover:bg-[#36a94e] transition-colors"
+            onClick={handleOffer}
+          >
+            Get $10 off <span className="font-normal">|</span>{" "}
+            <span className="text-white">{downsellPrice}</span>{" "}
+            <span className="line-through text-gray-200">
+              {monthlyPriceFormatted}
+            </span>
+          </button>
+        )}
+
         <button
           disabled={!canContinue}
           className={`w-full rounded-lg px-4 py-3 text-sm font-medium transition-colors ${

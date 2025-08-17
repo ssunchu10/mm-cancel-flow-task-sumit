@@ -3,7 +3,7 @@ import { getUserById } from "@/server-service/users";
 import { getSubscriptionByUserId } from "@/server-service/subscription";
 
 export async function GET(req: Request) {
-  const mockUserId = "550e8400-e29b-41d4-a716-446655440002";
+  const mockUserId = "550e8400-e29b-41d4-a716-446655440001";
   const cookieHeader = req.headers.get("cookie") || "";
   let userId =  mockUserId;
 
@@ -32,7 +32,6 @@ export async function GET(req: Request) {
       return jsonResponse;
     }
 
-    console.log(user, subscription);
     return NextResponse.json({ user, subscription });
   } catch (error) {
     console.error("General API error:", error);

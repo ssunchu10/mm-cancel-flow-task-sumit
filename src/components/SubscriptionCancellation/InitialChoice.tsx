@@ -2,16 +2,65 @@
 
 import Image from "next/image";
 import { useCancelFlowStore } from "@/store/cancelFlowStore";
+import { useState } from "react";
 
 export default function InitialChoice() {
-  const { setState } = useCancelFlowStore();
+  const { state, setState } = useCancelFlowStore();
+  const [loading, setLoading] = useState(false);
 
-  const handleChoose = (choice: "yes" | "no") => {
+  const initializeCancellation = async (
+    user_id: string,
+    subscription_id: string,
+    employment_status: string
+  ) => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/cancel-subscription/initialize", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-csrf-token": state.csrfToken || "",
+        },
+        credentials: "include",
+        body: JSON.stringify({ user_id, subscription_id, employment_status }),
+      });
+      const data = await res.json();
+      setLoading(false);
+      return data.cancellation;
+    } catch (error) {
+      setLoading(false);
+      console.error("API error:", error);
+      return null;
+    }
+  };
+
+  const handleChoose = async (choice: "yes" | "no") => {
+    const user_id = state.user?.id;
+    const subscription_id = state.subscription?.id;
+    const employment_status = choice === "yes" ? "employed" : "unemployed";
+
+    if (!user_id || !subscription_id) {
+      console.error("User ID or Subscription ID is missing.");
+      return;
+    }
+
+    const cancellation = await initializeCancellation(
+      user_id,
+      subscription_id,
+      employment_status
+    );
+
+    setState({
+      downsell_variant: cancellation?.downsell_variant,
+    });
+
+    const nextStep =
+      cancellation?.downsell_variant === "B" && choice === "no" && state.accepted_downsell ? 2 : 1;
     setState({
       choice,
-      currentStep: 1,
+      currentStep: nextStep,
       response: {
-        employment_status: choice === "yes" ? "employed" : "unemployed",
+        employment_status: employment_status,
       },
     });
   };

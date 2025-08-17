@@ -26,7 +26,7 @@ const SubscriptionStatus: React.FC<SubscriptionStatusProps> = ({ status }) => (
       <p className="text-sm font-medium text-gray-900">Subscription status</p>
     </div>
     <div className="flex items-center space-x-2">
-      {status === "active" && (
+      {status !== "cancelled" && (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-50 text-green-700 border border-green-200">
           Active
         </span>

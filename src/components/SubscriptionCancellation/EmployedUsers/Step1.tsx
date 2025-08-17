@@ -92,7 +92,6 @@ export default function EmployedStep1() {
       </h2>
 
       <hr className="md:hidden mt-2 mb-2 border-gray-200" />
-      {/* Q1 */}
       <div className="mt-2">
         <p className="text-xs md:text-sm text-gray-800 mb-2">
           Did you find this job with MigrateMate?{" "}
@@ -116,7 +115,6 @@ export default function EmployedStep1() {
         </div>
       </div>
 
-      {/* Q2 */}
       <div className="mt-5">
         <p className="text-xs md:text-sm text-gray-800 mb-2">
           How many roles did you apply for through Migrate Mate?{" "}
@@ -140,7 +138,6 @@ export default function EmployedStep1() {
         </div>
       </div>
 
-      {/* Q3 */}
       <div className="mt-5">
         <p className="text-xs md:text-sm text-gray-800 mb-2">
           How many companies did you email directly?{" "}
@@ -164,7 +161,6 @@ export default function EmployedStep1() {
         </div>
       </div>
 
-      {/* Q4 */}
       <div className="mt-5">
         <p className="text-xs md:text-sm text-gray-800 mb-2">
           How many different companies did you interview with?{" "}

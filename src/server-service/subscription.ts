@@ -1,5 +1,5 @@
 // Subscription service logic
-import { supabaseAdmin } from "../lib/supabase";
+import { supabaseAdmin } from "../lib/supabase-admin";
 
 export const getSubscriptionByUserId = async (userId: string) => {
   try {
@@ -39,6 +39,30 @@ export const updateSubscriptionStatus = async (
     return data;
   } catch (err) {
     console.error("updateSubscriptionStatus error:", err);
+    throw err;
+  }
+};
+
+export const decrementSubscriptionPrice = async (
+  subscriptionId: string,
+  currentPrice: number,
+  amount: number
+) => {
+  try {
+    const newPrice = currentPrice - amount;
+    const { data, error } = await supabaseAdmin
+      .from("subscriptions")
+      .update({
+        monthly_price: newPrice,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", subscriptionId)
+      .select("*")
+      .single();
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    console.error("decrementSubscriptionPrice error:", err);
     throw err;
   }
 };
