@@ -13,7 +13,9 @@ const REASONS = [
 
 export default function UnemployedStep3() {
   const { state, setState } = useCancelFlowStore();
+  const csrfToken = state.csrfToken || "";
   const response = state.response || {};
+  const subscriptionID = state.subscription?.id;
   const [selectedReason, setSelectedReason] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [details, setDetails] = useState<string>("");
@@ -69,10 +71,37 @@ export default function UnemployedStep3() {
   const handleBack = () => {
     setState({ currentStep: 2 });
   };
+
   const handleOffer = () => {
     setState({ subscriptionContinued: true });
   };
-  const handleNext = () => {
+  
+  async function callCancelSubscriptionApi(nextResponse: any) {
+    try {
+      const res = await fetch("/api/cancel-subscription/cancel", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-csrf-token": csrfToken || "",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          response: nextResponse,
+          subscriptionId: subscriptionID,
+          user_id: state.user?.id,
+        }),
+      });
+      const result = await res.json();
+      return { ok: res.ok, result };
+    } catch (err) {
+      return {
+        ok: false,
+        result: { error: "Network error. Please try again." },
+      };
+    }
+  }
+
+  const handleNext = async () => {
     if (!canContinue) return;
     const nextResponse = {
       ...response,
@@ -80,16 +109,19 @@ export default function UnemployedStep3() {
       amount,
       details,
     };
-    setState({
-      currentStep: 1,
-      flowCompletedUnemployed: true,
-      response: nextResponse,
-    });
-    console.log("response after setState (Step3):", nextResponse);
-    // Reset local state after storing response
-    setSelectedReason("");
-    setAmount("");
-    setDetails("");
+    const { ok, result } = await callCancelSubscriptionApi(nextResponse);
+    if (ok) {
+      setState({
+        currentStep: 1,
+        flowCompletedUnemployed: true,
+        response: nextResponse,
+      });
+      setSelectedReason("");
+      setAmount("");
+      setDetails("");
+    } else {
+      alert(result.error || "Failed to cancel subscription");
+    }
   };
 
   return (
@@ -222,7 +254,11 @@ export default function UnemployedStep3() {
               className="w-full min-h-40 p-4 border border-gray-300 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-[#8952fc]/30 focus:border-[#8952fc] bg-white text-black text-xs"
               aria-label="Feedback"
             />
-            <span className={`pointer-events-none absolute bottom-3 right-3 text-[11px] text-gray-500 ${details.trim().length < 25 ? 'text-red-500' : 'text-green-500'}`}>
+            <span
+              className={`pointer-events-none absolute bottom-3 right-3 text-[11px] text-gray-500 ${
+                details.trim().length < 25 ? "text-red-500" : "text-green-500"
+              }`}
+            >
               Min 25 characters ({details.trim().length}/25)
             </span>
           </div>

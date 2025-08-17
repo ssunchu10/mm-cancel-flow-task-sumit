@@ -13,6 +13,8 @@ import SubscriptionEndMessage from "./UnemployedUsers/SubscriptionEndMessage";
 import SubscriptionContinuedMessage from "./SubscriptionContinuedMessage";
 import EmployedEndMessage from "./EmployedUsers/SubscriptionEndMessage";
 import { useCancelFlowStore } from "@/store/cancelFlowStore";
+import { useState } from "react";
+import { getCsrfTokenClient } from "@/lib/getCsrfTokenClient";
 
 export default function CancelFlow() {
   const { state } = useCancelFlowStore();
@@ -23,8 +25,6 @@ export default function CancelFlow() {
     flowCompletedEmployed = false,
     subscriptionContinued = false,
   } = state as any;
-
-  const response = state.response; // Ensure response is always available to steps and updated on navigation
 
   const renderEmployedSteps = () => {
     switch (currentStep) {

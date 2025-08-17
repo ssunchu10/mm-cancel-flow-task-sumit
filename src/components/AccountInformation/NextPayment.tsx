@@ -2,9 +2,10 @@ import React from "react";
 
 interface NextPaymentProps {
   updatedAt: string;
+  status: string;
 }
 
-const NextPayment: React.FC<NextPaymentProps> = ({ updatedAt }) => {
+const NextPayment: React.FC<NextPaymentProps> = ({ updatedAt, status }) => {
   let nextPayment = "N/A";
   if (updatedAt) {
     const nextPaymentDate = new Date(updatedAt);
@@ -34,7 +35,7 @@ const NextPayment: React.FC<NextPaymentProps> = ({ updatedAt }) => {
             />
           </svg>
         </div>
-        <p className="text-sm font-medium text-gray-900">Next Payment</p>
+        {status === "cancelled" ? <p className="text-sm font-medium text-gray-900">Subscription valid until </p> : <p className="text-sm font-medium text-gray-900">Next Payment</p>}
       </div>
       <p className="text-sm font-medium text-gray-900">{nextPayment}</p>
     </div>

@@ -53,7 +53,6 @@ export const getCancellationHistory = async (userId: string) => {
 
 export const getDownsellVariant = async (userId: string, subscriptionId: string) => {
   try {
-    // Returns the downsell variant for a user's cancellation, if exists
     const { data, error } = await supabaseAdmin
       .from('cancellations')
       .select('downsell_variant')
@@ -62,7 +61,7 @@ export const getDownsellVariant = async (userId: string, subscriptionId: string)
       .order('created_at', { ascending: false })
       .limit(1)
       .single();
-    if (error && error.code !== 'PGRST116') throw error; // ignore not found
+    if (error && error.code !== 'PGRST116') throw error;
     return data?.downsell_variant;
   } catch (err) {
     console.error('getDownsellVariant error:', err);

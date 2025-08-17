@@ -31,6 +31,11 @@ const SubscriptionStatus: React.FC<SubscriptionStatusProps> = ({ status }) => (
           Active
         </span>
       )}
+      {status === "cancelled" && (
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-red-50 text-red-700 border border-red-200">
+          Inactive
+        </span>
+      )}
     </div>
   </div>
 );

@@ -41,7 +41,7 @@ export default function EmployedStep1() {
 
   const nextResponse = {
     ...(state.response ?? {}),
-    foundViaMM,
+    foundViaMM: foundViaMM === "yes" ? true : false,
     appliedCount,
     emailedCount,
     interviewedCount,
@@ -51,8 +51,6 @@ export default function EmployedStep1() {
     currentStep: 2,
     response: nextResponse,
   });
-
-  console.log("saved response:", nextResponse);
 
   resetLocal();
 };

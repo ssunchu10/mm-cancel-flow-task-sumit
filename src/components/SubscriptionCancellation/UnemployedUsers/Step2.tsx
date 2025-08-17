@@ -45,8 +45,6 @@ export default function UnemployedStep2() {
       currentStep: 3,
       response: nextResponse,
     });
-    console.log("response after setState (Step2):", nextResponse);
-    // Reset local state after storing response
     setAppliedCount(undefined);
     setEmailedCount(undefined);
     setInterviewedCount(undefined);

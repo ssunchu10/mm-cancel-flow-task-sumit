@@ -1,12 +1,7 @@
-import 'server only';
 import crypto from 'crypto';
-import { cookies } from 'next/headers';
 
-export async function issueCsrf() {
-  const token = crypto.randomBytes(32).toString('hex');
-  const cookieStore = await cookies();
-  cookieStore.set('csrf', token, { httpOnly: true, sameSite: 'strict', secure: true, path: '/' });
-  return token;
+export function generateCsrfToken(): string {
+  return crypto.randomBytes(32).toString('hex');
 }
 
 export function verifyCsrf(cookieValue?: string, formValue?: string) {

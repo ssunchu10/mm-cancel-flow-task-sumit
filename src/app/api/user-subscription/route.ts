@@ -1,38 +1,41 @@
-import { NextResponse } from 'next/server';
-import { getUserById } from '@/server-service/users';
-import { getSubscriptionByUserId } from '@/server-service/subscription';
+import { NextResponse } from "next/server";
+import { getUserById } from "@/server-service/users";
+import { getSubscriptionByUserId } from "@/server-service/subscription";
 
 export async function GET(req: Request) {
-  // For demo, use a hardcoded user ID. Replace with auth logic in production.
-  const userId = '550e8400-e29b-41d4-a716-446655440001';
+  const mockUserId = "550e8400-e29b-41d4-a716-446655440002";
+  const cookieHeader = req.headers.get("cookie") || "";
+  let userId =  mockUserId;
 
   try {
-    let user, subscription;
-    try {
-      user = await getUserById(userId);
-      if (!user) {
-        console.error('User not found for ID:', userId);
-        return NextResponse.json({ error: 'User not found' }, { status: 404 });
-      }
-    } catch (userError) {
-      console.error('Error fetching user:', userError);
-      return NextResponse.json({ error: 'Error fetching user', details: String(userError) }, { status: 500 });
+    const user = await getUserById(userId);
+    if (!user) {
+      console.error("User not found for ID:", userId);
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    try {
-      subscription = await getSubscriptionByUserId(userId);
-      if (!subscription) {
-        console.error('Subscription not found for user ID:', userId);
-        return NextResponse.json({ error: 'Subscription not found' }, { status: 404 });
-      }
-    } catch (subError) {
-      console.error('Error fetching subscription:', subError);
-      return NextResponse.json({ error: 'Error fetching subscription', details: String(subError) }, { status: 500 });
+    const subscription = await getSubscriptionByUserId(userId);
+    if (!subscription) {
+      console.error("Subscription not found for user ID:", userId);
+      return NextResponse.json(
+        { error: "Subscription not found" },
+        { status: 404 }
+      );
     }
 
+    if (!cookieHeader.match(/user_id=([^;]+)/)) {
+      const jsonResponse = NextResponse.json({ user, subscription });
+      jsonResponse.cookies.set("user_id", userId, {
+        path: "/",
+        httpOnly: false,
+      });
+      return jsonResponse;
+    }
+
+    console.log(user, subscription);
     return NextResponse.json({ user, subscription });
   } catch (error) {
-    console.error('General API error:', error);
+    console.error("General API error:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }

@@ -31,8 +31,6 @@ export default function EmployedStep2() {
       response: nextResponse,
     });
 
-    console.log("saved response:", nextResponse);
-
     resetLocal();
   };
 

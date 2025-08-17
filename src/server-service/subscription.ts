@@ -20,6 +20,14 @@ export const updateSubscriptionStatus = async (
   subscriptionId: string,
   status: string
 ) => {
+  const allowedStatuses = ["active", "pending_cancellation", "cancelled"];
+  if (!allowedStatuses.includes(status)) {
+    throw new Error(
+      `Invalid status: ${status}. Allowed values are: ${allowedStatuses.join(
+        ", "
+      )}`
+    );
+  }
   try {
     const { data, error } = await supabaseAdmin
       .from("subscriptions")

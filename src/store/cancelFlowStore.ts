@@ -27,7 +27,6 @@ export const CancelFlowSchema = z.object({
       created_at: z.string().optional(),
     })
     .nullable(),
-  // UI state properties for cancellation flow
   choice: z.enum(["yes", "no"]).nullable().default(null),
   currentStep: z.number().default(1),
   foundViaMM: z.enum(["yes", "no"]).nullable().default(null),
@@ -37,6 +36,7 @@ export const CancelFlowSchema = z.object({
   subscriptionContinued: z.boolean().default(false),
   subscriptionEndDate: z.string().default("XX date"),
   response: z.record(z.string(), z.any()).default({}),
+  csrfToken: z.string().optional(),
 });
 
 export type CancelFlowState = z.infer<typeof CancelFlowSchema>;
@@ -58,6 +58,7 @@ export const useCancelFlowStore = create<{
     subscriptionContinued: false,
     subscriptionEndDate: "XX date",
     response: {},
+    csrfToken: "",
   },
   setState: (newState) => {
     const merged = { ...useCancelFlowStore.getState().state, ...newState };

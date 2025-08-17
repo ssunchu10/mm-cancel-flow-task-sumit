@@ -5,7 +5,9 @@ import { useCancelFlowStore } from "@/store/cancelFlowStore";
 
 export default function EmployedStep3() {
   const { state, setState } = useCancelFlowStore();
+  const csrfToken = state.csrfToken || "";
   const response = state.response || {};
+  const subscriptionID = state.subscription?.id;
   const foundViaMM = response.foundViaMM as "yes" | "no" | undefined;
 
   const [hasLawyer, setHasLawyer] = useState<"yes" | "no" | null>(null);
@@ -21,23 +23,51 @@ export default function EmployedStep3() {
     setVisa("");
   };
 
-  const complete = () => {
+  async function callCancelSubscriptionApi(nextResponse: any) {
+    try {
+      const res = await fetch("/api/cancel-subscription/cancel", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-csrf-token": csrfToken || "",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          response: nextResponse,
+          subscriptionId: subscriptionID,
+          user_id: state.user?.id,
+        }),
+      });
+      const result = await res.json();
+      return { ok: res.ok, result };
+    } catch (err) {
+      return {
+        ok: false,
+        result: { error: "Network error. Please try again." },
+      };
+    }
+  }
+
+  const complete = async () => {
     if (!canSubmit) return;
 
     const nextResponse = {
       ...response,
-      hasLawyer,
+      hasLawyer: hasLawyer === "yes" ? true : false,
       visa,
     };
 
-    setState({
-      currentStep: 1,
-      flowCompletedEmployed: true,
-      response: nextResponse,
-    });
-
-    console.log("saved response (final):", nextResponse);
-    resetLocal();
+    const { ok, result } = await callCancelSubscriptionApi(nextResponse);
+    if (ok) {
+      setState({
+        currentStep: 1,
+        flowCompletedEmployed: true,
+        response: nextResponse,
+      });
+      resetLocal();
+    } else {
+      alert(result.error || "Failed to cancel subscription");
+    }
   };
 
   const handleBack = () => {
