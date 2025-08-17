@@ -4,6 +4,7 @@ import Image from "next/image";
 import MainImage from "../MainImage";
 import { useRouter } from "next/navigation";
 import { useCancelFlowStore } from "@/store/cancelFlowStore";
+import { useEffect } from "react";
 
 export default function EmployedEndMessage() {
   const router = useRouter();
@@ -23,8 +24,12 @@ export default function EmployedEndMessage() {
       });
     }, 300);
   };
+  
+  useEffect(()=> {
+    console.log(hasLawyer);
+  }, [])
 
-  if (hasLawyer === "yes") {
+  if (hasLawyer) {
     return (
       <div className="grid gap-6 p-6 md:grid-cols-2 md:gap-8">
         <div className="relative h-52 md:h-auto rounded-lg overflow-hidden order-1 md:order-2">

@@ -10,7 +10,6 @@ export default function SubscriptionEndMessage() {
   const endDate = state.subscriptionEndDate;
   return (
     <div className="grid gap-6 p-6 md:grid-cols-2 md:gap-10">
-      {/* Left text */}
       <div className="flex flex-col justify-center order-2 md:order-1">
         <h1 className="text-xl md:text-3xl font-semibold text-gray-900">
           Sorry to see you go, mate.

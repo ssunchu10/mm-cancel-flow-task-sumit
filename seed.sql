@@ -4,18 +4,17 @@
 
 -- Enable Row Level Security
 
--- Create users table
 CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email TEXT UNIQUE NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create subscriptions table
+
 CREATE TABLE IF NOT EXISTS subscriptions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  monthly_price INTEGER NOT NULL, -- Price in USD cents
+  monthly_price INTEGER NOT NULL,
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'pending_cancellation', 'cancelled')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -40,47 +39,6 @@ CREATE TABLE IF NOT EXISTS cancellations (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
-
--- Enable Row Level Security
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE cancellations ENABLE ROW LEVEL SECURITY;
-
--- Basic RLS policies (candidates should enhance these)
-CREATE POLICY "Users can view own data" ON users
-  FOR SELECT USING (auth.uid() = id);
-
-CREATE POLICY "Users can update own data" ON users
-  FOR UPDATE USING (auth.uid() = id);
-
-CREATE POLICY "Users can delete own data" ON users
-  FOR DELETE USING (auth.uid() = id);
-
-CREATE POLICY "Users can view own subscriptions" ON subscriptions
-  FOR SELECT USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can update own subscriptions" ON subscriptions
-  FOR UPDATE USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can delete own subscriptions" ON subscriptions
-  FOR DELETE USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can insert cancellations" ON cancellations
-  FOR INSERT;
-
-CREATE POLICY "Users can update cancellations" ON cancellations
-  FOR UPDATE;
-
-CREATE POLICY "Users can delete cancellations" ON cancellations
-  FOR DELETE;
-
-CREATE POLICY "Users can view cancellations" ON cancellations
-  FOR SELECT;
-
-CREATE POLICY "Users can mark subscription pending_cancellation" ON subscriptions
-  FOR UPDATE USING (
-    auth.uid() = user_id AND status = 'active'
-  );
 
 -- Seed data
 INSERT INTO users (id, email) VALUES

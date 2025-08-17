@@ -1,129 +1,113 @@
-# Migrate Mate - Subscription Cancellation Flow Challenge
+# Cancel Flow Task
 
 ## Overview
 
-Convert an existing Figma design into a fully-functional subscription-cancellation flow for Migrate Mate. This challenge tests your ability to implement pixel-perfect UI, handle complex business logic, and maintain security best practices.
+This project implements a subscription cancellation flow for a service, providing a seamless user experience while handling business logic, A/B testing, and secure data persistence. The application is built using modern web technologies and follows best practices for security and maintainability.
 
-## Objective
+## Features
 
-Implement the Figma-designed cancellation journey exactly on mobile + desktop, persist outcomes securely, and instrument the A/B downsell logic.
+### 1. Subscription Cancellation Flow
 
-## What's Provided
+- A multi-step cancellation process tailored for employed and unemployed users.
+- Dynamic UI rendering based on user choices and employment status.
+- Final messages for subscription continuation or cancellation.
 
-This repository contains:
-- ✅ Next.js + TypeScript + Tailwind scaffold
-- ✅ `seed.sql` with users table (25/29 USD plans) and empty cancellations table
-- ✅ Local Supabase configuration for development
-- ✅ Basic Supabase client setup in `src/lib/supabase.ts`
+### 2. A/B Testing
 
-## Tech Stack (Preferred)
-
-- **Next.js** with App Router
-- **React** with TypeScript
-- **Tailwind CSS** for styling
-- **Supabase** (Postgres + Row-Level Security)
-
-> **Alternative stacks allowed** if your solution:
-> 1. Runs with `npm install && npm run dev`
-> 2. Persists to a Postgres-compatible database
-> 3. Enforces table-level security
-
-## Must-Have Features
-
-### 1. Progressive Flow (Figma Design)
-- Implement the exact cancellation journey from provided Figma
-- Ensure pixel-perfect fidelity on both mobile and desktop
-- Handle all user interactions and state transitions
-
-### 2. Deterministic A/B Testing (50/50 Split)
-- **On first entry**: Assign variant via cryptographically secure RNG
-- **Persist** variant to `cancellations.downsell_variant` field
-- **Reuse** variant on repeat visits (never re-randomize)
-
-**Variant A**: No downsell screen
-**Variant B**: Show "$10 off" offer
-- Price $25 → $15, Price $29 → $19
-- **Accept** → Log action, take user back to profile page (NO ACTUAL PAYMENT PROCESSING REQUIRED)
-- **Decline** → Continue to reason selection in flow
+- Implements a 50/50 split A/B testing mechanism.
+- **Variant A**: No downsell offer.
+- **Variant B**: Displays a downsell offer with a discounted price.
+- User's variant is determined using a cryptographically secure random number generator and persisted for future visits.
 
 ### 3. Data Persistence
-- Mark subscription as `pending_cancellation` in database
-- Create cancellation record with:
-  - `user_id`
-  - `downsell_variant` (A or B)
-  - `reason` (from user selection)
-  - `accepted_downsell` (boolean)
-  - `created_at` (timestamp)
 
-### 4. Security Requirements
-- **Row-Level Security (RLS)** policies
-- **Input validation** on all user inputs
-- **CSRF/XSS protection**
-- Secure handling of sensitive data
+- Records cancellation details in the database, including:
+  - User ID
+  - Subscription ID
+  - Employment status
+  - Downsell variant
+  - Cancellation reason
+  - Feedback and other metadata
+- Updates subscription status to `pending_cancellation` or `cancelled` as appropriate.
 
-### 5. Reproducible Setup
-- `npm run db:setup` creates schema and seed data (local development)
-- Clear documentation for environment setup
+### 4. Security
 
-## Out of Scope
+- Implements CSRF protection using tokens validated on both client and server.
+- Validates all user inputs using Zod schemas.
 
-- **Payment processing** - Stub with comments only
-- **User authentication** - Use mock user data
-- **Email notifications** - Not required
-- **Analytics tracking** - Focus on core functionality
+## Tech Stack
 
-## Getting Started
+- **Next.js** with App Router for server-side rendering and API routes.
+- **React** with TypeScript for building a robust and type-safe UI.
+- **Tailwind CSS** for responsive and modern styling.
+- **Supabase** for database management and authentication.
+- **Zustand** for state management.
 
-1. **Clone this repository** `git clone [repo]`
-2. **Install dependencies**: `npm install`
-3. **Set up local database**: `npm run db:setup`
-4. **Start development**: `npm run dev`
+## Project Structure
 
-## Database Schema
+- `src/app`: Contains Next.js pages and API routes.
+- `src/components`: Reusable React components for the cancellation flow.
+- `src/lib`: Utility functions and Supabase client setup.
+- `src/store`: State management using Zustand.
+- `src/utils`: Helper functions for validation and server-side logic.
+- `supabase`: Configuration files for the Supabase setup.
 
-The `seed.sql` file provides a **starting point** with:
-- `users` table with sample users
-- `subscriptions` table with $25 and $29 plans
-- `cancellations` table (minimal structure - **you'll need to expand this**)
-- Basic RLS policies (enhance as needed)
+## Setup Instructions
 
-### Important: Schema Design Required
+### Prerequisites
 
-The current `cancellations` table is intentionally minimal. You'll need to:
-- **Analyze the cancellation flow requirements** from the Figma design
-- **Design appropriate table structure(s)** to capture all necessary data
-- **Consider data validation, constraints, and relationships**
-- **Ensure the schema supports the A/B testing requirements**
+- Node.js (v19 or higher)
+- Supabase CLI
+- PostgreSQL
 
-## Evaluation Criteria
+### Steps
 
-- **Functionality (40%)**: Feature completeness and correctness
-- **Code Quality (25%)**: Clean, maintainable, well-structured code
-- **Pixel/UX Fidelity (15%)**: Accuracy to Figma design
-- **Security (10%)**: Proper RLS, validation, and protection
-- **Documentation (10%)**: Clear README and code comments
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd cancel-flow-task
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Set up the database:
+   ```bash
+   npm run db:setup
+   ```
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-## Deliverables
+## Key Files
 
-1. **Working implementation** in this repository
-2. **NEW One-page README.md (replace this)** (≤600 words) explaining:
-   - Architecture decisions
-   - Security implementation
-   - A/B testing approach
-3. **Clean commit history** with meaningful messages
+- `src/app/api/cancel-subscription/cancel/route.ts`: Handles cancellation requests, including CSRF validation and database updates.
+- `src/app/api/cancel-subscription/initialize/route.ts`: Initializes the cancellation process and assigns A/B testing variants.
+- `src/components/SubscriptionCancellation/CancelFlow.tsx`: Main component for rendering the cancellation flow UI.
+- `seed.sql`: SQL script for seeding the database with initial data.
 
-## Timeline
+## Development Scripts
 
-Submit your solution within **72 hours** of receiving this repository.
+- `npm run dev`: Start the development server.
+- `npm run build`: Build the application for production.
+- `npm run start`: Start the production server.
+- `npm run db:setup`: Set up the database and seed initial data.
 
-## AI Tooling
+## Security Measures
 
-Using Cursor, ChatGPT, Copilot, etc. is **encouraged**. Use whatever accelerates your development—just ensure you understand the code and it runs correctly.
+- CSRF protection using tokens.
+- Input validation with Zod.
+- Row-Level Security (RLS) policies in Supabase.
 
-## Questions?
+> **Note:** Due to time constraints, Row-Level Security (RLS) was not fully implemented in this project. Future updates will address this limitation.
 
-Review the challenge requirements carefully. If you have questions about specific implementation details, make reasonable assumptions and document them in your README.
+## Future Enhancements
+
+- Add payment processing for downsell offers.
+- Integrate user authentication.
+- Implement analytics tracking for user interactions.
 
 ---
 
-**Good luck!** We're excited to see your implementation.
+**Thank you for exploring this project!**

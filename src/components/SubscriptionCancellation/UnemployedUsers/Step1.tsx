@@ -1,28 +1,38 @@
 "use client";
 
 import { useCancelFlowStore } from "@/store/cancelFlowStore";
+import { downsellPriceCents } from "@/utils/downsellVariant";
 import { useState, useEffect } from "react";
+import { callDownsellAcceptedApi } from "@/lib/api/downsellAccepted";
 
 export default function UnemployedStep1() {
   const { state, setState } = useCancelFlowStore();
   const response = state.response || {};
-  const [offerAccepted, setOfferAccepted] = useState(
-    response.offerAccepted ?? false
+  const [offerAccepted, setOfferAccepted] = useState(false);
+
+  const subscription = state.subscription;
+  const monthlyPrice = subscription?.monthly_price || 0;
+  const monthlyPriceFormatted = (monthlyPrice / 100).toFixed(2);
+  const downsellPrice = (downsellPriceCents(monthlyPrice || 0) / 100).toFixed(
+    2
   );
 
-  useEffect(() => {
-    setOfferAccepted(response.offerAccepted ?? false);
-  }, [response]);
-
-  const handleOffer = () => {
-    setOfferAccepted(true);
-    setState({
-      response: {
-        ...response,
-        offerAccepted: true,
-      },
-      subscriptionContinued: true,
-    });
+  const handleOffer = async () => {
+    try {
+      await callDownsellAcceptedApi();
+      setOfferAccepted(true);
+      setState({
+        response: {
+          ...response,
+          offerAccepted: true,
+        },
+        subscriptionContinued: true,
+      });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to accept offer";
+      alert(errorMessage);
+    }
   };
 
   const handleBack = () => {
@@ -73,20 +83,24 @@ export default function UnemployedStep1() {
 
       <div className="bg-purple-100 border border-purple-300 rounded-xl p-3 mb-3 md:text-center">
         <div className="text-3xl md:text-xl font-semibold mb-1 text-black">
-          Here's 50% off until you find a job.
+          Here's $10 off until you find a job.
         </div>
         <div className="flex items-center md:justify-center gap-4 mb-2">
-          <div className="text-lg font-bold text-purple-500">$12.50/month</div>
-          <div className="text-black line-through">$25/month</div>
+          <div className="text-lg font-bold text-purple-500">
+            ${downsellPrice}/month
+          </div>
+          <div className="text-black line-through">
+            ${monthlyPriceFormatted}/month
+          </div>
         </div>
         <button
           className="w-full rounded-lg px-4 py-3 text-sm font-medium bg-[#43c463] text-white hover:bg-[#36a94e] transition-colors mb-2"
           onClick={handleOffer}
         >
-          Get 50% off
+          Get $10 off
         </button>
         <div className="text-[10px] md:text-xs text-center text-black italic">
-          You wont be charged until your next billing date.
+          You won't be charged until your next billing date.
         </div>
       </div>
 

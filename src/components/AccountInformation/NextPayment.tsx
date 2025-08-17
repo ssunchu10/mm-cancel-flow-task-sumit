@@ -37,7 +37,7 @@ const NextPayment: React.FC<NextPaymentProps> = ({ updatedAt, status }) => {
         </div>
         {status === "cancelled" ? <p className="text-sm font-medium text-gray-900">Subscription valid until </p> : <p className="text-sm font-medium text-gray-900">Next Payment</p>}
       </div>
-      <p className="text-sm font-medium text-gray-900">{nextPayment}</p>
+      <p className="text-sm font-medium text-gray-900 whitespace-nowrap">{nextPayment}</p>
     </div>
   );
 };

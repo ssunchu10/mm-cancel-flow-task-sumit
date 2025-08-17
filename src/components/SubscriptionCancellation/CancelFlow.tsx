@@ -13,8 +13,6 @@ import SubscriptionEndMessage from "./UnemployedUsers/SubscriptionEndMessage";
 import SubscriptionContinuedMessage from "./SubscriptionContinuedMessage";
 import EmployedEndMessage from "./EmployedUsers/SubscriptionEndMessage";
 import { useCancelFlowStore } from "@/store/cancelFlowStore";
-import { useState } from "react";
-import { getCsrfTokenClient } from "@/lib/getCsrfTokenClient";
 
 export default function CancelFlow() {
   const { state } = useCancelFlowStore();
