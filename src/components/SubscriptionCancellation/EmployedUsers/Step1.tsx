@@ -12,7 +12,6 @@ const GRID_OPTIONS = {
 
 export default function EmployedStep1() {
   const { state, setState } = useCancelFlowStore();
-  const response = state.response || {};
   const [foundViaMM, setFoundViaMM] = useState<string | null>(null);
   const [appliedCount, setAppliedCount] = useState<string | undefined>(
     undefined
@@ -37,23 +36,23 @@ export default function EmployedStep1() {
   };
 
   const goNext = () => {
-  if (!canContinue) return;
+    if (!canContinue) return;
 
-  const nextResponse = {
-    ...(state.response ?? {}),
-    foundViaMM: foundViaMM === "yes" ? true : false,
-    appliedCount,
-    emailedCount,
-    interviewedCount,
+    const nextResponse = {
+      ...(state.response ?? {}),
+      foundViaMM: foundViaMM === "yes" ? true : false,
+      appliedCount,
+      emailedCount,
+      interviewedCount,
+    };
+
+    setState({
+      currentStep: 2,
+      response: nextResponse,
+    });
+
+    resetLocal();
   };
-
-  setState({
-    currentStep: 2,
-    response: nextResponse,
-  });
-
-  resetLocal();
-};
 
   useEffect(() => {
     resetLocal();

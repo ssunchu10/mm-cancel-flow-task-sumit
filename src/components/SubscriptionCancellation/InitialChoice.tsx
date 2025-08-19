@@ -2,33 +2,25 @@
 
 import Image from "next/image";
 import { useCancelFlowStore } from "@/store/cancelFlowStore";
-import { useState } from "react";
+import { initializeCancellationApi } from "@/lib/api/initializeCancellation";
 
 export default function InitialChoice() {
   const { state, setState } = useCancelFlowStore();
-  const [loading, setLoading] = useState(false);
 
   const initializeCancellation = async (
     user_id: string,
     subscription_id: string,
     employment_status: string
   ) => {
-    setLoading(true);
     try {
-      const res = await fetch("/api/cancel-subscription/initialize", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-csrf-token": state.csrfToken || "",
-        },
-        credentials: "include",
-        body: JSON.stringify({ user_id, subscription_id, employment_status }),
-      });
-      const data = await res.json();
-      setLoading(false);
+      const data = await initializeCancellationApi(
+        state.csrfToken || "",
+        user_id,
+        subscription_id,
+        employment_status
+      );
       return data.cancellation;
     } catch (error) {
-      setLoading(false);
       console.error("API error:", error);
       return null;
     }
@@ -55,7 +47,7 @@ export default function InitialChoice() {
     });
 
     const nextStep =
-      cancellation?.downsell_variant === "B" && choice === "no" && state.accepted_downsell ? 2 : 1;
+      (cancellation?.downsell_variant === "A" || state.accepted_downsell) && choice === "no" ? 2 : 1;
     setState({
       choice,
       currentStep: nextStep,
@@ -90,13 +82,13 @@ export default function InitialChoice() {
             onClick={() => handleChoose("yes")}
             className="w-full text-mid rounded-lg border border-gray-400 bg-white px-4 py-3 text-sm text-gray-900 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#8952fc]/20 focus:border-[#8952fc]"
           >
-            Yes, I've found a job
+            Yes, I&apos;ve found a job
           </button>
           <button
             onClick={() => handleChoose("no")}
             className="w-full text-mid rounded-lg border border-gray-400 bg-white px-4 py-3 text-sm text-gray-900 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#8952fc]/20 focus:border-[#8952fc]"
           >
-            Not yet - I'm still looking
+            Not yet - I&apos;m still looking
           </button>
         </div>
       </div>

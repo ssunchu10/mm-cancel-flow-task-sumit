@@ -3,8 +3,29 @@ import { cookies } from "next/headers";
 import { verifyCsrf } from "@/utils/server/csrf";
 import { cancellationInputSchema } from "@/utils/validation";
 
+interface BodyType {
+  user_id?: string;
+  subscriptionId?: string;
+  response?: ResponseType;
+  reason?: string;
+}
+
+interface ResponseType {
+  employment_status?: string;
+  foundViaMM?: boolean;
+  appliedCount?: string;
+  emailedCount?: string;
+  interviewedCount?: string;
+  hasLawyer?: boolean;
+  visa?: string;
+  feedback?: string;
+  cancelReason?: string;
+  details?: string;
+  offerAccepted?: boolean;
+}
+
 export async function POST(req: Request) {
-  let body: any;
+  let body: BodyType;
   try {
     body = await req.json();
   } catch {
@@ -22,7 +43,7 @@ export async function POST(req: Request) {
       { status: 401 }
     );
   }
-  
+
   const userId = body?.user_id;
 
   const subscriptionId = String(body?.subscriptionId ?? "").trim();
@@ -37,7 +58,7 @@ export async function POST(req: Request) {
 
   const randomArray = new Uint8Array(1);
   crypto.getRandomValues(randomArray);
-  const variant = randomArray[0] < 128 ? 'A' : 'B';
+  const variant = randomArray[0] < 128 ? "A" : "B";
 
   const cancellationInput = {
     user_id: userId,
@@ -75,12 +96,13 @@ export async function POST(req: Request) {
     };
     try {
       await requestCancellation(cancellationPayload);
-    } catch (cancelErr: any) {
-      console.error("Cancellation service error:", cancelErr);
+    } catch (cancelErr: unknown) {
+      const error = cancelErr as { message?: string };
+      console.error("Cancellation service error:", error);
       return NextResponse.json(
         {
           error: "Failed to save cancellation entry",
-          details: cancelErr?.message ?? String(cancelErr),
+          details: error.message ?? String(cancelErr),
         },
         { status: 500 }
       );
@@ -91,24 +113,26 @@ export async function POST(req: Request) {
     );
     try {
       await updateSubscriptionStatus(subscriptionId, "cancelled");
-    } catch (subErr: any) {
-      console.error("Subscription service error:", subErr);
+    } catch (subErr: unknown) {
+      const error = subErr as { message?: string };
+      console.error("Subscription service error:", error);
       return NextResponse.json(
         {
           error: "Failed to update subscription status",
-          details: subErr?.message ?? String(subErr),
+          details: error.message ?? String(subErr),
         },
         { status: 500 }
       );
     }
     return NextResponse.json({ ok: true });
-  } catch (e: any) {
-    console.error("Unexpected server error:", e);
+  } catch (e: unknown) {
+    const error = e as { message?: string; stack?: string };
+    console.error("Unexpected server error:", error);
     return NextResponse.json(
       {
         error: "Unexpected server error",
-        details: e?.message ?? String(e),
-        stack: e?.stack ?? null,
+        details: error.message ?? String(e),
+        stack: error.stack ?? null,
       },
       { status: 500 }
     );

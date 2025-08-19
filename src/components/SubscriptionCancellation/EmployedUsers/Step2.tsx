@@ -82,13 +82,13 @@ export default function EmployedStep2() {
       </button>
 
       <h2 className="text-[20px] md:text-[25px] leading-snug font-semibold text-gray-900">
-        What's one thing you wish we could've helped you with?
+        What&apos;s one thing you wish we could&apos;ve helped you with?
       </h2>
 
       <hr className="md:hidden mt-3 mb-3 border-gray-200" />
 
       <p className="text-xs md:text-sm text-black mt-2">
-        We're always looking to improve, your thoughts can help us make Migrate
+        We&apos;re always looking to improve, your thoughts can help us make Migrate
         Mate more useful for others.*
       </p>
 

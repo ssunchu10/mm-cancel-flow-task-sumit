@@ -3,9 +3,9 @@ import { getUserById } from "@/server-service/users";
 import { getSubscriptionByUserId } from "@/server-service/subscription";
 
 export async function GET(req: Request) {
-  const mockUserId = "550e8400-e29b-41d4-a716-446655440001";
+  const mockUserId = "550e8400-e29b-41d4-a716-446655440003";
   const cookieHeader = req.headers.get("cookie") || "";
-  let userId =  mockUserId;
+  const userId = mockUserId;
 
   try {
     const user = await getUserById(userId);

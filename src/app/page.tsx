@@ -7,6 +7,10 @@ import EmailInfo from "@/components/AccountInformation/EmailInfo";
 import SubscriptionStatus from "@/components/AccountInformation/SubscriptionStatus";
 import MonthlyPrice from "@/components/AccountInformation/MonthlyPrice";
 import NextPayment from "@/components/AccountInformation/NextPayment";
+import {
+  fetchUserSubscription,
+  fetchCsrfToken,
+} from "@/lib/api/userSubscription";
 
 interface User {
   id: string;
@@ -31,12 +35,11 @@ export default function ProfilePage() {
   const router = useRouter();
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
   const [csrfToken, setCsrfToken] = useState<string>("");
-  const { state, setState } = useCancelFlowStore();
+  const { setState } = useCancelFlowStore();
 
   useEffect(() => {
     setLoading(true);
-    fetch("/api/user-subscription")
-      .then((res) => res.json())
+    fetchUserSubscription()
       .then((data) => {
         setUser(data.user);
         setSubscription(data.subscription);
@@ -51,9 +54,7 @@ export default function ProfilePage() {
         setLoading(false);
       });
 
-    // Fetch CSRF token and set cookie
-    fetch("/api/csrf")
-      .then((res) => res.json())
+    fetchCsrfToken()
       .then((data) => {
         if (data.csrfToken) {
           setCsrfToken(data.csrfToken);
@@ -63,7 +64,7 @@ export default function ProfilePage() {
       .catch((err) => {
         console.error("API csrf error:", err);
       });
-  }, []);
+  }, [setState]);
 
   useEffect(() => {
     if (user || subscription) {

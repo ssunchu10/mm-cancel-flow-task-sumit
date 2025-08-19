@@ -2,13 +2,11 @@
 
 import { useCancelFlowStore } from "@/store/cancelFlowStore";
 import { downsellPriceCents } from "@/utils/downsellVariant";
-import { useState, useEffect } from "react";
 import { callDownsellAcceptedApi } from "@/lib/api/downsellAccepted";
 
 export default function UnemployedStep1() {
   const { state, setState } = useCancelFlowStore();
   const response = state.response || {};
-  const [offerAccepted, setOfferAccepted] = useState(false);
 
   const subscription = state.subscription;
   const monthlyPrice = subscription?.monthly_price || 0;
@@ -20,7 +18,6 @@ export default function UnemployedStep1() {
   const handleOffer = async () => {
     try {
       await callDownsellAcceptedApi();
-      setOfferAccepted(true);
       setState({
         response: {
           ...response,
@@ -40,7 +37,6 @@ export default function UnemployedStep1() {
   };
 
   const handleNext = () => {
-    setOfferAccepted(false);
     setState({
       response: {
         ...response,
@@ -78,12 +74,12 @@ export default function UnemployedStep1() {
         We built this to help you land the job, this makes it a little easier.
       </h2>
       <p className="md:block hidden text-gray-600 font-semibold mb-5 mt-2">
-        We've been there and we're here to help you.
+        We&apos;ve been there and we&apos;re here to help you.
       </p>
 
       <div className="bg-purple-100 border border-purple-300 rounded-xl p-3 mb-3 md:text-center">
         <div className="text-3xl md:text-xl font-semibold mb-1 text-black">
-          Here's $10 off until you find a job.
+          Here&apos;s $10 off until you find a job.
         </div>
         <div className="flex items-center md:justify-center gap-4 mb-2">
           <div className="text-lg font-bold text-purple-500">
@@ -100,7 +96,7 @@ export default function UnemployedStep1() {
           Get $10 off
         </button>
         <div className="text-[10px] md:text-xs text-center text-black italic">
-          You won't be charged until your next billing date.
+          You won&apos;t be charged until your next billing date.
         </div>
       </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useCancelFlowStore } from "@/store/cancelFlowStore";
 import { downsellPriceCents } from "@/utils/downsellVariant";
 import { callDownsellAcceptedApi } from "@/lib/api/downsellAccepted";
@@ -92,7 +92,7 @@ export default function UnemployedStep2() {
 
       <h2 className="text-[20px] md:text-[25px] leading-snug font-semibold text-gray-900 mb-2">
         <span className="md:hidden">
-          What's the main reason for cancelling?
+          What&apos;s the main reason for cancelling?
         </span>
 
         <span className="hidden md:inline">
@@ -172,7 +172,7 @@ export default function UnemployedStep2() {
       <hr className="mt-5 border-gray-200" />
 
       <div className="mt-5 grid gap-3">
-        {state.accepted_downsell || (
+        {state.accepted_downsell == false && state.downsell_variant === "B" && (
           <button
             className="w-full rounded-lg px-4 py-3 text-sm font-medium bg-[#43c463] text-white hover:bg-[#36a94e] transition-colors"
             onClick={handleOffer}

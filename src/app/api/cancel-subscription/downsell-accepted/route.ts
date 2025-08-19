@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { verifyCsrf } from "@/utils/server/csrf";
 import { acceptDownsell } from "@/server-service/cancellation";
 import { decrementSubscriptionPrice } from "@/server-service/subscription";

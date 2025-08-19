@@ -22,7 +22,13 @@ export default function CancelFlow() {
     flowCompletedUnemployed = false,
     flowCompletedEmployed = false,
     subscriptionContinued = false,
-  } = state as any;
+  } = state as {
+    choice: string | null;
+    currentStep: number;
+    flowCompletedUnemployed: boolean;
+    flowCompletedEmployed: boolean;
+    subscriptionContinued: boolean;
+  };
 
   const renderEmployedSteps = () => {
     switch (currentStep) {

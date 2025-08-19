@@ -16,12 +16,12 @@ export default function SubscriptionEndMessage() {
         </h1>
 
         <p className="mt-4 text-lg font-semibold text-black">
-          Thanks for being with us, and you're always welcome back.
+          Thanks for being with us, and you&apos;re always welcome back.
         </p>
 
         <p className="mt-3 text-sm text-black leading-relaxed">
           Your subscription is set to end on {endDate}. <br />
-          You'll still have full access until then. No further charges after
+          You&apos;ll still have full access until then. No further charges after
           that.
         </p>
 
@@ -40,7 +40,11 @@ export default function SubscriptionEndMessage() {
             setTimeout(() => {
               useCancelFlowStore
                 .getState()
-                .setState({ flowCompletedUnemployed: false, choice: null, currentStep: 1 });
+                .setState({
+                  flowCompletedUnemployed: false,
+                  choice: null,
+                  currentStep: 1,
+                });
             }, 300);
           }}
           className="w-full md:w-auto rounded-xl bg-[#826eff] px-6 py-3 text-sm font-semibold text-white shadow hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-[#826eff]/40"
