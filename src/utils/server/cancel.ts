@@ -19,7 +19,15 @@ export async function getOrCreateCancellation(
     .limit(1)
     .maybeSingle();
 
-  if (existing) return existing;
+  if (existing) {
+    const { error: updateError } = await supabaseAdmin
+      .from("cancellations")
+      .update({ employment_status })
+      .eq("id", existing.id);
+
+    if (updateError) throw updateError;
+    return { ...existing, employment_status };
+  }
 
   const variant = assignVariant();
   const { data, error } = await supabaseAdmin
@@ -27,7 +35,7 @@ export async function getOrCreateCancellation(
     .insert({
       user_id: userId,
       subscription_id: subscriptionId,
-      employment_status: null,
+      employment_status: employment_status,
       downsell_variant: variant,
       accepted_downsell: false,
       created_at: new Date().toISOString(),
@@ -38,4 +46,3 @@ export async function getOrCreateCancellation(
   if (error) throw error;
   return data;
 }
-

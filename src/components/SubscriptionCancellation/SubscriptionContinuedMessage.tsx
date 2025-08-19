@@ -7,8 +7,8 @@ import { CloseIcon } from "../Icons";
 import { useCancelFlowStore } from "@/store/cancelFlowStore";
 
 export default function SubscriptionContinuedMessage() {
-  const { state, setState } = useCancelFlowStore();
   const router = useRouter();
+  const { setState } = useCancelFlowStore();
 
   const handleClose = () => {
     router.push("/");
@@ -21,7 +21,7 @@ export default function SubscriptionContinuedMessage() {
         subscriptionContinued: false,
       });
     }, 300);
-  };  
+  };
 
   return (
     <div className="w-full">
@@ -49,12 +49,12 @@ export default function SubscriptionContinuedMessage() {
           <p className="mt-3 text-xl md:text-2xl font-semibold leading-snug text-gray-900">
             You&apos;re still on the path to your dream role.{" "}
             <span className="text-[#826eff]">
-              Let's make it happen together!
+              Let&apos;s make it happen together!
             </span>
           </p>
 
           <div className="mt-4 text-[13px] md:text-sm leading-6 text-gray-600">
-            <p>You've got XX days left on your current plan.</p>
+            <p>You&apos;ve got XX days left on your current plan.</p>
             <p>Starting from XX date, your monthly payment will be $12.50.</p>
           </div>
 

@@ -4,8 +4,14 @@ import { verifyCsrf } from "@/utils/server/csrf";
 import { getOrCreateCancellation } from "@/utils/server/cancel";
 import { updateSubscriptionStatus } from "@/server-service/subscription";
 
+interface BodyType {
+  user_id: string;
+  subscription_id: string;
+  employment_status: string;
+}
+
 export async function POST(req: NextRequest) {
-  let body: any;
+  let body: BodyType;
   try {
     body = await req.json();
   } catch {

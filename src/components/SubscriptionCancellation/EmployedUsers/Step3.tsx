@@ -1,13 +1,14 @@
 "use client";
 
-import { useMemo, useState, useEffect, use } from "react";
+import { useMemo, useState } from "react";
 import { useCancelFlowStore } from "@/store/cancelFlowStore";
+import { cancelSubscriptionApi } from "@/lib/api/cancelSubscription";
 
 export default function EmployedStep3() {
   const { state, setState } = useCancelFlowStore();
   const csrfToken = state.csrfToken || "";
   const response = state.response || {};
-  const subscriptionID = state.subscription?.id;
+  const subscriptionID = state.subscription?.id || "";
   const foundViaMM = response.foundViaMM as "yes" | "no" | undefined;
 
   const [hasLawyer, setHasLawyer] = useState<"yes" | "no" | null>(null);
@@ -23,27 +24,26 @@ export default function EmployedStep3() {
     setVisa("");
   };
 
-  async function callCancelSubscriptionApi(nextResponse: any) {
+  async function callCancelSubscriptionApi(
+    nextResponse: Record<string, unknown>
+  ) {
     try {
-      const res = await fetch("/api/cancel-subscription/cancel", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-csrf-token": csrfToken || "",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          response: nextResponse,
-          subscriptionId: subscriptionID,
-          user_id: state.user?.id,
-        }),
-      });
-      const result = await res.json();
-      return { ok: res.ok, result };
-    } catch (err) {
+      const result = await cancelSubscriptionApi(
+        csrfToken,
+        subscriptionID,
+        state.user?.id || "",
+        nextResponse
+      );
+      return { ok: true, result };
+    } catch (error) {
       return {
         ok: false,
-        result: { error: "Network error. Please try again." },
+        result: {
+          error:
+            typeof error === "object" && error !== null && "message" in error
+              ? (error as { message?: string }).message || "Network error. Please try again."
+              : "Network error. Please try again.",
+        },
       };
     }
   }
@@ -104,20 +104,21 @@ export default function EmployedStep3() {
       <h2 className="text-[20px] md:text-[25px] leading-snug font-semibold text-gray-900">
         {foundViaMM === "yes" ? (
           <span>
-            We helped you land the job, now let's help you secure your visa.
+            We helped you land the job, now let&apos;s help you secure your
+            visa.
           </span>
         ) : (
           <>
             <span>You landed the job!</span>
             <br className="sm:block" />
-            <em className="italic">That's what we live for.</em>
+            <em className="italic">That&apos;s what we live for.</em>
           </>
         )}
       </h2>
 
       {foundViaMM === "no" && (
         <p className="text-xs md:text-sm text-black font-semibold mt-2">
-          Even if it wasn't through Migrate Mate,
+          Even if it wasn&apos;t through Migrate Mate,
           <br className="sm:block" />
           let us help get your visa sorted.
         </p>

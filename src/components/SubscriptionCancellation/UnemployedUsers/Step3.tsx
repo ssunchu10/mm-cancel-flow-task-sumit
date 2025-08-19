@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useCancelFlowStore } from "@/store/cancelFlowStore";
 import { downsellPriceCents } from "@/utils/downsellVariant";
 import { callDownsellAcceptedApi } from "@/lib/api/downsellAccepted";
+import { cancelSubscriptionApi } from "@/lib/api/cancelSubscription";
 
 const REASONS = [
   "Too expensive",
@@ -92,27 +93,29 @@ export default function UnemployedStep3() {
     }
   };
 
-  async function callCancelSubscriptionApi(nextResponse: any) {
+  async function callCancelSubscriptionApi(
+    nextResponse: Record<string, unknown>
+  ) {
     try {
-      const res = await fetch("/api/cancel-subscription/cancel", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-csrf-token": csrfToken || "",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          response: nextResponse,
-          subscriptionId: subscriptionID,
-          user_id: state.user?.id,
-        }),
-      });
-      const result = await res.json();
-      return { ok: res.ok, result };
-    } catch (err) {
+      if (!subscriptionID) {
+        throw new Error("Subscription ID is missing");
+      }
+
+      const result = await cancelSubscriptionApi(
+        csrfToken,
+        subscriptionID,
+        state.user?.id || "",
+        nextResponse
+      );
+      return { ok: true, result };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Network error. Please try again.";
       return {
         ok: false,
-        result: { error: "Network error. Please try again." },
+        result: { error: errorMessage },
       };
     }
   }
@@ -164,7 +167,7 @@ export default function UnemployedStep3() {
         </span>
       </button>
       <h2 className="text-[20px] md:text-[25px] leading-snug font-semibold text-gray-900 mb-2">
-        What's the main reason for cancelling?
+        What&apos;s the main reason for cancelling?
       </h2>
       <p className="text-xs md:text-sm text-gray-800 mb-4">
         Please take a minute to let us know why:
@@ -282,7 +285,7 @@ export default function UnemployedStep3() {
       )}
       <hr className="mt-5 border-gray-200" />
       <div className="mt-5 grid gap-3">
-        {state.accepted_downsell || (
+        {state.accepted_downsell == false && state.downsell_variant === "B" &&(
           <button
             className="w-full rounded-lg px-4 py-3 text-sm font-medium bg-[#43c463] text-white hover:bg-[#36a94e] transition-colors"
             onClick={handleOffer}
