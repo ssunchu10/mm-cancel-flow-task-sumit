@@ -65,7 +65,6 @@ This project implements a subscription cancellation flow for a service, providin
 1. Clone the repository:
    ```bash
    git clone <repository-url>
-   cd cancel-flow-task
    ```
 2. Install dependencies:
    ```bash
